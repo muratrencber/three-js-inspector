@@ -1,0 +1,12 @@
+silver:
+  type: physical
+  textureRoot: coast_sand_rocks 
+  map: diffuse
+  displacementMap: displacement
+  roughnessMap: roughness
+  aoMap: ao
+  normalMap: normal
+  anisotropyMap: arm
+  envMap: yokohama
+  roughness: 0
+  metalness: 1

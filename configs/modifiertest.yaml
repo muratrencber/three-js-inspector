@@ -1,0 +1,21 @@
+ringMaterialModifier:
+  type: switch
+  targetType: material
+  values:
+    - silver
+    - gold
+  tags: [ring, material]
+ringStoneScaleModifier:
+  type: scale
+  min: 1
+  max: 2
+  tags: [ring, scale]
+ringStoneMeshModifier:
+  type: switch
+  targetType: mesh
+  target: .children.stone
+  values:
+    - stone01
+    - stone02
+    - stone03
+  tags: [ring, stone, mesh]

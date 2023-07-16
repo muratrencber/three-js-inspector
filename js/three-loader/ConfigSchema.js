@@ -1,0 +1,327 @@
+/**
+ * 
+ * @param {any} serializedProperty 
+ * @returns {DefaultValue}
+ */
+function parseDefaultValue(serializedProperty)
+{
+    if(serializedProperty === undefined) return undefined;
+    if(typeof serializedProperty === "object")
+    {
+        const parseResult= DefaultValueMap.tryParse(serializedProperty);
+        if(parseResult) return parseResult;
+    }
+    return new DefaultValue(serializedProperty);
+}
+
+/**
+ * 
+ * @param {any} value 
+ * @returns {string}
+ */
+function getValueType(value, deep = true)
+{
+    if(Array.isArray(value))
+    {
+        if(!deep) return "array";
+        return `array[${getValueType(value[0], false)}]`;
+    }
+    return typeof value;
+}
+
+class DefaultValue
+{
+    constructor(value)
+    {
+        this.value = value;
+    }
+
+    getValue(object)
+    {
+        return this.value;
+    }
+}
+
+class DefaultValueMap {
+    /**
+     * 
+     * @param {String} targetKey 
+     * @param {Object} values
+     */
+    constructor(targetKey, values) {
+        this.targetKey = targetKey;
+        this.values = values;
+    }
+
+    /**
+     * 
+     * @param {Object} serializedProperty 
+     * @returns {DefaultValueMap}
+     */
+    static tryParse(serializedProperty)
+    {
+        const target = serializedProperty.target;
+        const values = serializedProperty.values;
+        if(!target || !values)
+            return undefined;
+        return new DefaultValueMap(target, values);
+    }
+
+    getValue(object) {
+        console.log(object);
+        console.log(this.targetKey);
+        console.log(this.values);
+        let targetValue = this.targetKey ? object[this.targetKey] : undefined;
+        if(targetValue === undefined) targetValue = "default";
+        return this.values[targetValue];
+    }
+}
+
+class ValidationResult
+{
+    constructor()
+    {
+        /**
+         * @type {bool}
+         */
+        this.validated;
+        /**
+         * @type {string}
+         */
+        this.failureKey;
+        /**
+         * @type {string}
+         */
+        this.failureMessage;
+        /**
+         * @type {any}
+         */
+        this.foundValue;
+        /**
+         * @type {any}
+         */
+        this.necessaryValue;
+    }
+
+    /**
+     * 
+     * @param {string} key
+     * @param {string} message 
+     * @param {any} value 
+     * @param {any} necessaryValue 
+     * @returns {ValidationResult}
+     */
+    static failure(key, message, value = undefined, necessaryValue = undefined)
+    {
+        let res = new ValidationResult();
+        Object.assign(res,
+            {
+                validated: false,
+                failureKey: key,
+                failureMessage: message,
+                foundValue: value,
+                necessaryValue: necessaryValue
+            }
+        );
+        return res;
+    }
+
+    /**
+     * 
+     * @returns {ValidationResult}
+     */
+    static success()
+    {
+        let res = new ValidationResult();
+        res.validated = true;
+        return res;
+    }
+
+    assert()
+    {
+        if(this.validated) return;
+        let errorMessage = this.failureMessage;
+        errorMessage += "\nAt key: " + this.failureKey;
+        if(this.foundValue) errorMessage += "\nGiven value: " + this.foundValue;
+        if(this.necessaryValue) errorMessage += "\nRequired: "+ this.necessaryValue;
+        throw new Error(errorMessage);
+    }
+}
+
+class SchemaEntry
+{
+    constructor(targetKey, serializedValue)
+    {
+        /**
+         * @type {string}
+         * @private
+         */
+        this.targetKey = targetKey;
+        /**
+         * @type {Array}
+         */
+        this.values = serializedValue.values;
+        this.value = serializedValue.value;
+        /**
+         * @type {DefaultValue}
+         */
+        this.default = parseDefaultValue(serializedValue.default);
+        /**
+         * @type {string}
+         */
+        this.valueType = serializedValue.valueType;
+        /**
+         * @type {Array<string>}
+         */
+        this.valueTypes = serializedValue.valueTypes;
+        /**
+         * @type {boolean|string}
+         */
+        this.optional = serializedValue.optional;
+        /**
+         * @type {boolean}
+         */
+        this.setDefault = serializedValue.setDefault;
+    }
+
+    getDefaultValue(targetObject)
+    {
+        return this.default?.getValue(targetObject);
+    }
+
+    /**
+     * 
+     * @param {any} targetObject
+     * @returns {ValidationResult}
+     */
+    validate(targetObject)
+    {
+        /**
+         * @type {Array<(targetValue: any) => ValidationResult>}
+         */
+        const validators = [this.validateUndefined, this.validateValue, this.validateTypes];
+        for(const validator of validators)
+        {
+            const result = validator.bind(this)(targetObject);
+            if(!result.validated) return result;
+        }
+        return ValidationResult.success();
+    }
+
+    /**
+     * 
+     * @param {any} targetObject 
+     * @private
+     * @returns {ValidationResult} 
+     */
+    validateUndefined(targetObject)
+    {
+        const targetValue = targetObject[this.targetKey];
+        if(targetValue !== undefined) return ValidationResult.success();
+        if(this.optional === "useDefault") {
+            const defaultValue = this.default.getValue(targetObject);
+            if(defaultValue === undefined) return ValidationResult.failure(this.targetKey, "Property must be set!", targetValue);
+            return ValidationResult.success();
+        }
+        if(this.optional) return ValidationResult.success();
+        return ValidationResult.failure(this.targetKey, "Property must be set!");
+    }
+
+    /**
+     * 
+     * @param {any} targetObject 
+     * @private
+     * @returns {ValidationResult} 
+     */
+    validateValue(targetObject)
+    {
+        const targetValue = targetObject[this.targetKey];
+        const isValue = this.value === undefined || this.value === targetValue;
+        const isValues = this.values === undefined || this.values.includes(targetValue);
+        if(isValue || isValues) return ValidationResult.success()
+        return ValidationResult.failure(this.targetKey, "Invalid value!", targetValue, this.values ?? this.value);
+    }
+
+
+    /**
+     * 
+     * @param {any} targetObject 
+     * @private
+     * @returns {ValidationResult} 
+     */
+    validateTypes(targetObject)
+    {
+        const targetValue = targetObject[this.targetKey];
+        const type = getValueType(targetValue);
+        const validSingular = this.valueType === undefined || this.valueType === type;
+        const validMultiple = this.valueTypes === undefined || this.valueTypes.includes(type);
+        if(validSingular || validMultiple) return ValidationResult.success();
+        return ValidationResult.failure(this.targetKey, "Invalid type!", targetValue, this.valueTypes ?? this.valueType);
+    }
+}
+
+
+export class Schema 
+{
+    constructor(schemaObject)
+    {
+        /**
+         * @type {Object.<string, SchemaEntry>}
+         * @private
+         */
+        this.dict = {};
+        for(const key in schemaObject)
+        {
+            const schemaValue = new SchemaEntry(key, schemaObject[key]);
+            this.dict[key] = schemaValue;
+        }
+    }
+
+    assertValidate(targetObject) 
+    {
+        for(const key in this.dict)
+        {
+            const valueValidationResult = this.dict[key].validate(targetObject);
+            valueValidationResult.assert();
+        }
+    }
+
+    tryGetValue(targetObject, key)
+    {
+        if(!this.dict[key]) return undefined;
+        return this.dict[key].getDefaultValue(targetObject);
+    }
+}
+
+export const SchemaKeys = {
+    TEXTURE: "TEXTURE"
+};
+/**
+ * @type {Object.<string, Schema>}
+ */
+const SCHEMAS = {};
+
+/**
+ * 
+ * @param {SchemaKeys} key 
+ */
+function TryLoadSchema(key) {
+    if(SCHEMAS[key]) return;
+    const path = `/schemas/${SchemaKeys[key]}.yaml`;
+    const request = new XMLHttpRequest();
+    request.open("GET", path, false);
+    request.send();
+    const schemaContent = request.responseText;
+    const schemaObject = jsyaml.load(schemaContent);
+    SCHEMAS[key] = new Schema(schemaObject);
+}
+
+/**
+ * 
+ * @param {SchemaKeys} key 
+ * @returns {Schema}
+ */
+export function GetSchema(key) {
+    TryLoadSchema(key);
+    return SCHEMAS[key];
+}

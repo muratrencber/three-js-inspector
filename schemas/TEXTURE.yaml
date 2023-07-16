@@ -1,0 +1,26 @@
+type:
+  values: [texture, cubemap, hdri]
+  default: texture
+  valueType: string
+  optional: true
+sources:
+  default:
+    target: type
+    values:
+      cubemap: [[px, nx, py, ny, pz, nz]]
+  optional: useDefault
+  valueTypes: ["array[string]", string]
+root:
+  valueType: string
+  optional: true
+defaultExtension:
+  default:
+    target: type
+    values:
+      hdri: hdr
+  valueType: string
+  optional: true
+properties:
+  default: {}
+  valueType: object
+  optional: true

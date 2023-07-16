@@ -1,0 +1,28 @@
+root:
+  children:
+    ring:
+      type: mesh
+      position: [0, 0, 0]
+      scale: 5
+      materials: silver
+      geometry: /models/rings/basic.obj
+      modifiers:
+        - ringMaterialModifier
+        - ringStoneMeshModifier
+      children:
+        stoneRoot:
+          type: link
+          position: [5,1,1]
+          wraps: stone
+          children: []
+    surface:
+      type: primitiveMesh
+      geometry: plane
+      materials: black-gradient
+      rotation: [90, 0, 0]
+    light:
+      type: pointLight
+      position: [0, 10, 0]
+      intensity: 
+      radius: 10
+      color: 0xffffffc

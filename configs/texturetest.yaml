@@ -1,0 +1,14 @@
+yokohama:
+  type: cubemap
+  root: "/texture/cubemap/yokohama"
+  defaultExtension: jpg
+coast_sand_rocks:
+  type: texture
+  root: "/texture/coast_sand_and_rocks"
+  sources:
+    - diffuse
+    - displacement
+    - normal
+    - roughness
+    - ao
+    - arm
