@@ -14,6 +14,11 @@ export class ConfigLoader
         this.schema = GetSchema(schemaKey);
     }
 
+    /**
+     * 
+     * @param {Object} config 
+     * @returns {ConfigLoader}
+     */
     setConfig(config) {
         this.schema.assertValidate(config);
         this.config = config;

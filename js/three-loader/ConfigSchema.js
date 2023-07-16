@@ -1,17 +1,17 @@
 /**
  * 
  * @param {any} serializedProperty 
- * @returns {DefaultValue}
+ * @returns {SchemaEntryValue}
  */
-function parseDefaultValue(serializedProperty)
+function parseSchemaEntryValue(serializedProperty)
 {
     if(serializedProperty === undefined) return undefined;
     if(typeof serializedProperty === "object")
     {
-        const parseResult= DefaultValueMap.tryParse(serializedProperty);
+        const parseResult= SchemaEntryValueMap.tryParse(serializedProperty);
         if(parseResult) return parseResult;
     }
-    return new DefaultValue(serializedProperty);
+    return new SchemaEntryValue(serializedProperty);
 }
 
 /**
@@ -26,10 +26,17 @@ function getValueType(value, deep = true)
         if(!deep) return "array";
         return `array[${getValueType(value[0], false)}]`;
     }
-    return typeof value;
+    let type = typeof value;
+    if(type === "object")
+    {
+        const keys = Object.keys(value);
+        if(keys.length === 0) return "object";
+        return `object[${getValueType(object[keys[0]], false)}]`;
+    }
+    return type;
 }
 
-class DefaultValue
+class SchemaEntryValue
 {
     constructor(value)
     {
@@ -42,7 +49,7 @@ class DefaultValue
     }
 }
 
-class DefaultValueMap {
+class SchemaEntryValueMap {
     /**
      * 
      * @param {String} targetKey 
@@ -56,7 +63,7 @@ class DefaultValueMap {
     /**
      * 
      * @param {Object} serializedProperty 
-     * @returns {DefaultValueMap}
+     * @returns {SchemaEntryValueMap}
      */
     static tryParse(serializedProperty)
     {
@@ -64,7 +71,7 @@ class DefaultValueMap {
         const values = serializedProperty.values;
         if(!target || !values)
             return undefined;
-        return new DefaultValueMap(target, values);
+        return new SchemaEntryValueMap(target, values);
     }
 
     getValue(object) {
@@ -158,22 +165,25 @@ class SchemaEntry
          */
         this.targetKey = targetKey;
         /**
-         * @type {Array}
+         * @type {SchemaEntryValue}
          */
-        this.values = serializedValue.values;
-        this.value = serializedValue.value;
+        this.values = parseSchemaEntryValue(serializedValue.values);
         /**
-         * @type {DefaultValue}
+         * @type {SchemaEntryValue}
          */
-        this.default = parseDefaultValue(serializedValue.default);
+        this.value = parseSchemaEntryValue(serializedValue.value);
         /**
-         * @type {string}
+         * @type {SchemaEntryValue}
          */
-        this.valueType = serializedValue.valueType;
+        this.default = parseSchemaEntryValue(serializedValue.default);
         /**
-         * @type {Array<string>}
+         * @type {SchemaEntryValue}
          */
-        this.valueTypes = serializedValue.valueTypes;
+        this.valueType = parseSchemaEntryValue(serializedValue.valueType);
+        /**
+         * @type {SchemaEntryValue}
+         */
+        this.valueTypes = parseSchemaEntryValue(serializedValue.valueTypes);
         /**
          * @type {boolean|string}
          */
@@ -235,11 +245,13 @@ class SchemaEntry
      */
     validateValue(targetObject)
     {
+        const validValue = this.value?.getValue(targetObject);
+        const validValues = this.values?.getValue(targetObject);
         const targetValue = targetObject[this.targetKey];
-        const isValue = this.value === undefined || this.value === targetValue;
-        const isValues = this.values === undefined || this.values.includes(targetValue);
+        const isValue = validValue === undefined || validValue === targetValue;
+        const isValues = validValues === undefined || validValues.includes(targetValue);
         if(isValue || isValues) return ValidationResult.success()
-        return ValidationResult.failure(this.targetKey, "Invalid value!", targetValue, this.values ?? this.value);
+        return ValidationResult.failure(this.targetKey, "Invalid value!", targetValue, validValues ?? validValue);
     }
 
 
@@ -251,12 +263,14 @@ class SchemaEntry
      */
     validateTypes(targetObject)
     {
+        const validValueType = this.valueType?.getValue(targetObject);
+        const validValueTypes = this.valueTypes?.getValue(targetObject);
         const targetValue = targetObject[this.targetKey];
         const type = getValueType(targetValue);
-        const validSingular = this.valueType === undefined || this.valueType === type;
-        const validMultiple = this.valueTypes === undefined || this.valueTypes.includes(type);
+        const validSingular = validValueType === undefined || validValueType === type;
+        const validMultiple = validValueTypes === undefined || validValueTypes.includes(type);
         if(validSingular || validMultiple) return ValidationResult.success();
-        return ValidationResult.failure(this.targetKey, "Invalid type!", targetValue, this.valueTypes ?? this.valueType);
+        return ValidationResult.failure(this.targetKey, "Invalid type!", targetValue, validValueTypes ?? validValueType);
     }
 }
 

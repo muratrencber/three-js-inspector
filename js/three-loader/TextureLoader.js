@@ -1,6 +1,6 @@
 import {ConfigLoader} from './ConfigLoader.js';
 import {SchemaKeys} from './ConfigSchema.js';
-import {normalizePath} from './path.js';
+import {normalizePath, getFileNameWithoutExtension} from './path.js';
 import * as THREE from 'three';
 
 export class TextureLoader extends ConfigLoader
@@ -9,18 +9,64 @@ export class TextureLoader extends ConfigLoader
     {
         super(SchemaKeys.TEXTURE);
     }
+    /**
+     * 
+     * @param {Object} config 
+     * @returns {TextureLoader}
+     */
+    setConfig(config)
+    {
+        super.setConfig(config);
+        return this;
+    }
 
-    async load(progressCallback)
+    /**
+     * @typedef {Object.<string, THREE.Texture>} resultMap
+     * @typedef {function(number)} progressCallback
+     * @typedef {(key: string, texture: THREE.Texture, resultMap: resultMap)} singleTextureLoadedCallback
+     * @typedef {(resultMap: resultMap)} allTexturesLoadedCallback
+     * @param {{onProgress: progressCallback, onTextureLoaded: singleTextureLoadedCallback, onAllLoaded: allTexturesLoadedCallback}} callbacks 
+     * @returns {Promise<resultMap>}
+     */
+    async load(callbacks)
     {
         const loader = this.getLoader();
         const root = this.getValue("root", null);
         if(root) loader.setPath(normalizePath(root));
-        const sources = this.getSources();
-        const texture = await loader.loadAsync(sources, progressCallback);
-        for(const key in this.getValue("properties")) {
-            texture[key] = this.config.properties[key];
+        const sources = this.getValue("sources");
+        const isDict = !Array.isArray(sources);
+        const iteratorSource = isDict ? Object.keys(sources) : sources;
+        let resultMap = {}
+        let index = 0;
+        for(const iteratorElement of iteratorSource)
+        {
+            index++;
+            const sourceArray = isDict ? sources[iteratorElement] : iteratorElement;
+            const sanitizedSources = this.sanitizeSource(sourceArray);
+            const key = isDict ? iteratorElement : this.generateKeyFromSource(sourceArray, index);
+            const texture = await loader.loadAsync(sanitizedSources, callbacks?.onProgress);
+            resultMap[key] = texture;
+            callbacks?.onTextureLoaded(key, texture, resultMap);
         }
-        return texture; 
+        const globalProperties = this.getValue("globalProperties");
+        for(const key in globalProperties) {
+            for(const texKey in resultMap)
+            {
+                const texture = resultMap[texKey];
+                if(!texture) continue;
+                texture[texKey] = globalProperties[key];
+            }
+        }
+        const properties = this.getValue("properties");
+        for(const targetTextureKey in properties) {
+            const targetTexture = resultMap[targetTextureKey];
+            if(!targetTexture) continue;
+            const targetProperties = properties[targetTextureKey];
+            for(const key in targetProperties)
+                targetTexture[key] = targetProperties[key];
+        }
+        callbacks?.onAllLoaded(resultMap);
+        return resultMap;
     }
 
     /**
@@ -54,15 +100,28 @@ export class TextureLoader extends ConfigLoader
      * @private
      * @returns {(String|Array<String>)}
      */
-    getSources() {
+    sanitizeSource(source) {
         const type = this.getValue("type");
-        let sources = this.getValue("sources");
-        if(!Array.isArray(sources))
-            sources = [sources];
+        if(!Array.isArray(source))
+            source = [source];
         const extension = this.getValue("defaultExtension");
-        const sanitizedSources = sources.map(s => this.sanitizePath(s, extension));
-        if(type !== "cubemap") return sanitizedSources[0];
-        return sanitizedSources;
+        const sanitizedSource = source.map(s => this.sanitizePath(s, extension));
+        if(type !== "cubemap") return sanitizedSource[0];
+        return sanitizedSource;
+    }
+
+    /**
+     * 
+     */
+    generateKeyFromSource(source, index = undefined)
+    {
+        if(Array.isArray(source))
+        {
+            if(!index)
+                throw new Error("You must use an index when creating a key for cubemap sources!");
+            return `group${index}`;
+        }
+        return getFileNameWithoutExtension(source);
     }
 
     /**

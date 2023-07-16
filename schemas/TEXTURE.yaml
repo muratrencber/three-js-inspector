@@ -9,7 +9,12 @@ sources:
     values:
       cubemap: [[px, nx, py, ny, pz, nz]]
   optional: useDefault
-  valueTypes: ["array[string]", string]
+  valueTypes:
+    target: type
+    values:
+      texture: ["array[string]","object[string]"]
+      cubemap: ["array[array]","object[array]"]
+      hdri: ["array[string]","object[string]"]
 root:
   valueType: string
   optional: true
@@ -20,7 +25,11 @@ defaultExtension:
       hdri: hdr
   valueType: string
   optional: true
+globalProperties:
+  default: {}
+  valueType: object
+  optional: useDefault
 properties:
   default: {}
   valueType: object
-  optional: true
+  optional: useDefault
