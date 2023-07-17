@@ -31,7 +31,7 @@ function getValueType(value, deep = true)
     {
         const keys = Object.keys(value);
         if(keys.length === 0) return "object";
-        return `object[${getValueType(object[keys[0]], false)}]`;
+        return `object[${getValueType(value[keys[0]], false)}]`;
     }
     return type;
 }
@@ -308,7 +308,8 @@ export class Schema
 }
 
 export const SchemaKeys = {
-    TEXTURE: "TEXTURE"
+    TEXTURE_PACK: "TEXTURE_PACK",
+    MATERIAL: "MATERIAL"
 };
 /**
  * @type {Object.<string, Schema>}
@@ -321,7 +322,7 @@ const SCHEMAS = {};
  */
 function TryLoadSchema(key) {
     if(SCHEMAS[key]) return;
-    const path = `/schemas/${SchemaKeys[key]}.yaml`;
+    const path = `./schemas/${SchemaKeys[key]}.yaml`;
     const request = new XMLHttpRequest();
     request.open("GET", path, false);
     request.send();

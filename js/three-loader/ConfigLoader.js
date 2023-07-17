@@ -1,5 +1,10 @@
 import {Schema, SchemaKeys, GetSchema} from './ConfigSchema.js';
+import { DependencyDictionary } from './DependencyManager.js';
 
+/**
+ * @template ConfigType
+ * @abstract
+ */
 export class ConfigLoader 
 {
     /**
@@ -34,5 +39,17 @@ export class ConfigLoader
         return value;
     }
 
+    /**
+     * 
+     * @returns { DependencyDictionary }
+     */
+    getDependencies()
+    {
+        return new DependencyDictionary();
+    }
+
+    /**
+     * @returns {Promise<ConfigType>}
+     */
     async load() { throw new Error("Cannot load with abstract base class ConfigLoader!"); }
 }

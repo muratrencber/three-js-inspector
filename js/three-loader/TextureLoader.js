@@ -1,18 +1,23 @@
 import {ConfigLoader} from './ConfigLoader.js';
 import {SchemaKeys} from './ConfigSchema.js';
+import { TexturePack } from './TexturePack.js';
 import {normalizePath, getFileNameWithoutExtension} from './path.js';
 import * as THREE from 'three';
 
-export class TextureLoader extends ConfigLoader
+
+/**
+ * @extends ConfigLoader<TexturePack>
+ */
+export class TexturePackLoader extends ConfigLoader
 {
     constructor()
     {
-        super(SchemaKeys.TEXTURE);
+        super(SchemaKeys.TEXTURE_PACK);
     }
     /**
      * 
      * @param {Object} config 
-     * @returns {TextureLoader}
+     * @returns {TexturePackLoader}
      */
     setConfig(config)
     {
@@ -21,12 +26,11 @@ export class TextureLoader extends ConfigLoader
     }
 
     /**
-     * @typedef {Object.<string, THREE.Texture>} resultMap
      * @typedef {function(number)} progressCallback
-     * @typedef {(key: string, texture: THREE.Texture, resultMap: resultMap)} singleTextureLoadedCallback
-     * @typedef {(resultMap: resultMap)} allTexturesLoadedCallback
+     * @typedef {(key: string, texture: THREE.Texture, texturePack: TexturePack)} singleTextureLoadedCallback
+     * @typedef {(texturePack: TexturePack)} allTexturesLoadedCallback
      * @param {{onProgress: progressCallback, onTextureLoaded: singleTextureLoadedCallback, onAllLoaded: allTexturesLoadedCallback}} callbacks 
-     * @returns {Promise<resultMap>}
+     * @returns {Promise<TexturePack>}
      */
     async load(callbacks)
     {
@@ -36,7 +40,7 @@ export class TextureLoader extends ConfigLoader
         const sources = this.getValue("sources");
         const isDict = !Array.isArray(sources);
         const iteratorSource = isDict ? Object.keys(sources) : sources;
-        let resultMap = {}
+        let resultPack = new TexturePack();
         let index = 0;
         for(const iteratorElement of iteratorSource)
         {
@@ -45,28 +49,28 @@ export class TextureLoader extends ConfigLoader
             const sanitizedSources = this.sanitizeSource(sourceArray);
             const key = isDict ? iteratorElement : this.generateKeyFromSource(sourceArray, index);
             const texture = await loader.loadAsync(sanitizedSources, callbacks?.onProgress);
-            resultMap[key] = texture;
-            callbacks?.onTextureLoaded(key, texture, resultMap);
+            resultPack.addTexture(key, texture)
+            callbacks?.onTextureLoaded(key, texture, resultPack);
         }
         const globalProperties = this.getValue("globalProperties");
         for(const key in globalProperties) {
-            for(const texKey in resultMap)
+            for(const texKey in resultPack.dict)
             {
-                const texture = resultMap[texKey];
+                const texture = resultPack.getTexture(texKey);
                 if(!texture) continue;
                 texture[texKey] = globalProperties[key];
             }
         }
         const properties = this.getValue("properties");
         for(const targetTextureKey in properties) {
-            const targetTexture = resultMap[targetTextureKey];
+            const targetTexture = resultPack.getTexture(targetTextureKey);
             if(!targetTexture) continue;
             const targetProperties = properties[targetTextureKey];
             for(const key in targetProperties)
                 targetTexture[key] = targetProperties[key];
         }
-        callbacks?.onAllLoaded(resultMap);
-        return resultMap;
+        callbacks?.onAllLoaded(resultPack);
+        return resultPack;
     }
 
     /**
@@ -121,7 +125,7 @@ export class TextureLoader extends ConfigLoader
                 throw new Error("You must use an index when creating a key for cubemap sources!");
             return `group${index}`;
         }
-        return getFileNameWithoutExtension(source);
+        return getFileNameWithoutExtension(this.sanitizeSource(source));
     }
 
     /**

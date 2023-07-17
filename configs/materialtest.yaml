@@ -1,12 +1,13 @@
-silver:
+grass:
   type: physical
-  textureRoot: coast_sand_rocks 
-  map: diffuse
-  displacementMap: displacement
-  roughnessMap: roughness
-  aoMap: ao
-  normalMap: normal
-  anisotropyMap: arm
-  envMap: yokohama
-  roughness: 0
-  metalness: 1
+  texturePackSource: coast_sand_rocks
+  properties:
+    map: diffuse
+    displacementMap: displacement
+    aoMap: ao
+    roughnessMap: roughness
+    displacementScale: 0.1
+    normalMap: normal
+    roughness: 0
+    metalness: 1
+    envMap: yokohama/group1

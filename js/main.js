@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { TextureLoader } from './three-loader/TextureLoader.js';
+import { TextureDatabase } from './three-loader/TextureDatabase.js';
 import { LightProbeGenerator } from 'three/examples/jsm/lights/LightProbeGenerator.js';
+import { MaterialDatabase } from './three-loader/MaterialDatabase.js';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera();
@@ -16,17 +17,7 @@ cube.rotateX(200);
 scene.add(cube);
 camera.position.set(0,0,5);
 
-const envMapConfig = {
-    type: "cubemap",
-    root: "/data/texture/cubemap/yokohama",
-    defaultExtension: "jpg"
-};
-const cubeDiffuseConfig = {
-    sources: ["/data/texture/coast_sand_rocks/diffuse.jpg","/data/texture/coast_sand_rocks/displacement.jpg","/data/texture/coast_sand_rocks/normal.jpg",
-    "/data/texture/coast_sand_rocks/roughness.jpg","/data/texture/coast_sand_rocks/ao.jpg","/data/texture/coast_sand_rocks/arm.jpg"],
-};
-const cubeLoader = new TextureLoader();
-cubeLoader.setConfig(cubeDiffuseConfig).load().then(resultMap => {
+/*TextureDatabase.instance.load("coast_sand_rocks").then(resultMap => {
     console.log(resultMap);
     const newMat = new THREE.MeshPhysicalMaterial({map: resultMap.diffuse});
     newMat.map = resultMap.diffuse;
@@ -36,15 +27,18 @@ cubeLoader.setConfig(cubeDiffuseConfig).load().then(resultMap => {
     newMat.roughnessMap = resultMap.roughness;
     newMat.aoMap = resultMap.ao;
     cube.material = newMat;
-});
-
-const txloader = new TextureLoader();
-txloader.setConfig(envMapConfig).load().then(resultMap => {
-    const tex = resultMap["group1"];
+});*/
+TextureDatabase.instance.load("yokohama").then(resultPack => {
+    const tex = resultPack.getTexture("group1");
     cubeMaterial.envMap = tex;
     scene.background = tex;
-    const lp = LightProbeGenerator.fromCubeTexture(tex);
-    scene.add(lp);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    scene.add(ambientLight);
+    //const lp = LightProbeGenerator.fromCubeTexture(tex);
+    //scene.add(lp);
+});
+MaterialDatabase.instance.load("grass").then(mat => {
+    cube.material = mat;
 });
 /*
 Promise.all([cubeDiffuse, cubeDisplacement, cubeNormal, cubeRoughness, cubeAO, cubeArm]).then(texes => {

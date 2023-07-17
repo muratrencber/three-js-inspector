@@ -1,0 +1,14 @@
+type:
+  values: [standard, physical]
+  default: standard
+extends:
+  validType: string
+  optional: true
+texturePackSource:
+  validType: string
+  optional: true
+texturePackSources:
+  validType: array[string]
+  optional: true
+properties:
+  optional: true
