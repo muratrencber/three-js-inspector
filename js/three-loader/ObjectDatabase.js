@@ -12,7 +12,7 @@ export class ObjectDatabase
      * @param {string} CONFIGS_PATH 
      * @param {() => ConfigLoader} loaderConstructor
      */
-    constructor(CONFIGS_PATH, loaderConstructor, loadParameters)
+    constructor(CONFIGS_PATH, loaderConstructor)
     {
         /**
          * @type {string}
@@ -44,10 +44,6 @@ export class ObjectDatabase
          * @protected
          */
         this.loadList = [];
-        /**
-         * @protected
-         */
-        this.loadParameters = loadParameters;
         /**
          * @type {bool}
          * @protected
@@ -143,7 +139,7 @@ export class ObjectDatabase
         const loader = this.initLoader();
         loader.setConfig(config);
         if(checkDependencies) await this.loadDependencies(loader.getDependencies());
-        let result = await loader.load(this.loadParameters);
+        let result = await loader.load();
         this.loadedConfigMap[key] = result;
         return result;
     }

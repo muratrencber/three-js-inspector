@@ -3,6 +3,12 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { TextureDatabase } from './three-loader/TextureDatabase.js';
 import { LightProbeGenerator } from 'three/examples/jsm/lights/LightProbeGenerator.js';
 import { MaterialDatabase } from './three-loader/MaterialDatabase.js';
+import { registerCallback } from './three-loader/CallbackManager.js';
+import { TexturePack } from './three-loader/TexturePack.js';
+
+TextureDatabase.instance;
+MaterialDatabase.instance;
+
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera();
@@ -17,43 +23,66 @@ cube.rotateX(200);
 scene.add(cube);
 camera.position.set(0,0,5);
 
-/*TextureDatabase.instance.load("coast_sand_rocks").then(resultMap => {
-    console.log(resultMap);
-    const newMat = new THREE.MeshPhysicalMaterial({map: resultMap.diffuse});
-    newMat.map = resultMap.diffuse;
-    newMat.displacementMap = resultMap.displacement;
-    newMat.displacementScale = 0.025;
-    newMat.normalMap = resultMap.normal;
-    newMat.roughnessMap = resultMap.roughness;
-    newMat.aoMap = resultMap.ao;
-    cube.material = newMat;
-});*/
-TextureDatabase.instance.load("yokohama").then(resultPack => {
-    const tex = resultPack.getTexture("group1");
+registerCallback("yokohama/loadedAll",
+([pack]) => {
+    const tex = pack.getTexture("group1");
     cubeMaterial.envMap = tex;
     scene.background = tex;
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-    scene.add(ambientLight);
-    //const lp = LightProbeGenerator.fromCubeTexture(tex);
-    //scene.add(lp);
+});
+registerCallback("grass/loadlog",
+([mat]) => {
+    console.log("loaded material GRASS:");
+    console.log(mat);
 });
 MaterialDatabase.instance.load("grass").then(mat => {
     cube.material = mat;
 });
-/*
-Promise.all([cubeDiffuse, cubeDisplacement, cubeNormal, cubeRoughness, cubeAO, cubeArm]).then(texes => {
-    const [diff, disp, norm, rough, ao, arm] = texes;
-    cubeMaterial.roughnessMap = rough;
-    cubeMaterial.map = diff;
-    cubeMaterial.displacementMap = disp;
-    cubeMaterial.displacementScale = 0.1;
-    cubeMaterial.normalMap = norm;
-    cubeMaterial.aoMap = ao;
-    cubeMaterial.anisotropyMap = arm;
-
-})*/
-
-
+let lightProbe = null;
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+scene.add(ambientLight);
+document.getElementById("ambient-input").addEventListener("input", (nv) => {
+    ambientLight.intensity = parseFloat(nv.target.value);
+})
+document.getElementById("roughness-input").addEventListener("input", (nv) => {
+    const value = parseFloat(nv.target.value);
+    cube.material.roughness = value;
+})
+document.getElementById("metalness-input").addEventListener("input", (nv) => {
+    const value = parseFloat(nv.target.value);
+    cube.material.metalness = value;
+})
+document.getElementById("use-lp").addEventListener("click", () => {
+    try {
+        scene.remove(ambientLight);
+    } catch {}
+    if(!lightProbe) {
+        renderer.domElement.style.opacity = 0.2;
+        setTimeout(setLP, 100);
+        return;
+    }
+    try {
+        scene.remove(lightProbe);
+    } catch {}
+    scene.add(lightProbe);
+})
+function setLP()
+{
+    lightProbe = LightProbeGenerator.fromCubeTexture(scene.background);
+    try {
+        scene.remove(lightProbe);
+    } catch {}
+    scene.add(lightProbe);
+    renderer.domElement.style.opacity = 1;
+}
+document.getElementById("use-al").addEventListener("click", () => {
+    try {
+        scene.remove(lightProbe);
+    } catch {}
+    try {
+        scene.remove(ambientLight);
+    } catch {}
+    scene.add(ambientLight);
+})
 
 const size = Math.min(window.innerWidth, window.innerHeight);
 renderer.setSize(size, size);
@@ -64,7 +93,7 @@ render();
 document.addEventListener("keydown", (ev) => {
     const key = ev.keyCode;
     const deg2Rad = 3.14 / 180;
-    const rotateAmount = deg2Rad;
+    const rotateAmount = deg2Rad * 3;
     console.log(key);
     if(key == 37)
     {

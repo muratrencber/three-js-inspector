@@ -33,3 +33,7 @@ properties:
   default: {}
   valueType: object
   optional: useDefault
+loadedOneCallback:
+  optional: true
+loadedAllCallback:
+  optional: true

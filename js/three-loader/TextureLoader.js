@@ -1,3 +1,4 @@
+import { invokeCallback } from './CallbackManager.js';
 import {ConfigLoader} from './ConfigLoader.js';
 import {SchemaKeys} from './ConfigSchema.js';
 import { TexturePack } from './TexturePack.js';
@@ -26,13 +27,9 @@ export class TexturePackLoader extends ConfigLoader
     }
 
     /**
-     * @typedef {function(number)} progressCallback
-     * @typedef {(key: string, texture: THREE.Texture, texturePack: TexturePack)} singleTextureLoadedCallback
-     * @typedef {(texturePack: TexturePack)} allTexturesLoadedCallback
-     * @param {{onProgress: progressCallback, onTextureLoaded: singleTextureLoadedCallback, onAllLoaded: allTexturesLoadedCallback}} callbacks 
      * @returns {Promise<TexturePack>}
      */
-    async load(callbacks)
+    async load()
     {
         const loader = this.getLoader();
         const root = this.getValue("root", null);
@@ -48,9 +45,9 @@ export class TexturePackLoader extends ConfigLoader
             const sourceArray = isDict ? sources[iteratorElement] : iteratorElement;
             const sanitizedSources = this.sanitizeSource(sourceArray);
             const key = isDict ? iteratorElement : this.generateKeyFromSource(sourceArray, index);
-            const texture = await loader.loadAsync(sanitizedSources, callbacks?.onProgress);
+            const texture = await loader.loadAsync(sanitizedSources);
             resultPack.addTexture(key, texture)
-            callbacks?.onTextureLoaded(key, texture, resultPack);
+            invokeCallback(this.getValue("loadedOneCallback"), key, texture, resultPack);
         }
         const globalProperties = this.getValue("globalProperties");
         for(const key in globalProperties) {
@@ -69,7 +66,7 @@ export class TexturePackLoader extends ConfigLoader
             for(const key in targetProperties)
                 targetTexture[key] = targetProperties[key];
         }
-        callbacks?.onAllLoaded(resultPack);
+        invokeCallback(this.getValue("loadedAllCallback"), resultPack);
         return resultPack;
     }
 

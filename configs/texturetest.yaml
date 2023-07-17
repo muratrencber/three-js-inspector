@@ -2,6 +2,7 @@ yokohama:
   type: cubemap
   root: ./data/texture/cubemap/yokohama
   defaultExtension: jpg
+  loadedAllCallback: yokohama/loadedAll
 coast_sand_rocks:
   type: texture
   root: ./data/texture/coast_sand_rocks

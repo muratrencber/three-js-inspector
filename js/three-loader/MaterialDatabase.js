@@ -11,7 +11,7 @@ const CONFIGS_PATH = "./configs/materialtest.yaml";
 export class MaterialDatabase extends ObjectDatabase {
     constructor()
     {
-        super(CONFIGS_PATH, MaterialLoader, undefined);
+        super(CONFIGS_PATH, MaterialLoader);
     }
 
 

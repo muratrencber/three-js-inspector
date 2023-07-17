@@ -3,6 +3,7 @@ import { SchemaKeys } from './ConfigSchema.js';
 import * as THREE from 'three';
 import { getTexturePackProvider, getMaterialProvider, DependencyDictionary } from './DependencyManager.js';
 import { TexturePack } from './TexturePack.js';
+import { invokeCallback } from './CallbackManager.js';
 
 const MATERIAL_PROPERTIES_TYPE_MAP = {
     clippingPlanes: Array,
@@ -131,6 +132,7 @@ export class MaterialLoader extends ConfigLoader
                 result = new THREE.MeshStandardMaterial(properties);
                 break;
         }
+        invokeCallback(this.getValue("loadedCallback"), result);
         return result;
     }
 
@@ -152,7 +154,20 @@ export class MaterialLoader extends ConfigLoader
         let singularSource = this.getValue("texturePackSource", undefined);
         singularSource = singularSource ? [singularSource] : [];
         const multipleSources = this.getValue("texturePackSources", []);
-        return [...singularSource, ...multipleSources];
+        const propertySources = [...singularSource, ...multipleSources];
+        const properties = this.getValue("properties", {});
+        for(const pKey in properties)
+        {
+            if(MATERIAL_PROPERTIES_TYPE_MAP[pKey] !== THREE.Texture) continue;
+            const value = properties[pKey];
+            const splitted = value.split("/");
+            if(splitted.length <= 1) continue;
+            const rootKey = splitted[0];
+            if(propertySources.includes(rootKey)) continue;
+            propertySources.push(rootKey);
+
+        }
+        return propertySources;
     }
 
     /**

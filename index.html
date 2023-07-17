@@ -20,6 +20,11 @@
         </script>
 	</head>
 	<body>
+    <p>Left-Right arrows: Rotate Y<br>Up-Down arrows: Rotate X<br>K-L: Rotate Z</p>
+    <label for="metalness-input">Metalness: </label><input value="0" id="metalness-input" type="range" min="0" max="1" step="0.01" name="metalness-input"><br>
+    <label for="roughness-input">Roughness: </label><input value="1" id="roughness-input" type="range" min="0" max="1" step="0.01" name="roughness-input"><br>
+    <label for="ambient-input">Ambient Light Intensity: </label><input value="0.8" id="ambient-input" type="range" min="0" max="1" step="0.01" name="ambient-input"><br>
+    <button id="use-lp">Use LightProbe</button><button id="use-al">Use Ambient Light</button>
 		<script type="module" src="./js/main.js"></script>
 	</body>
 </html>

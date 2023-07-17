@@ -12,3 +12,6 @@ texturePackSources:
   optional: true
 properties:
   optional: true
+loadedCallback:
+  optional: true
+  validType: string

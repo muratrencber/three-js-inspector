@@ -17,7 +17,7 @@ export class TextureDatabase extends ObjectDatabase
      */
     constructor()
     {
-        super(CONFIGS_PATH, TexturePackLoader, undefined);
+        super(CONFIGS_PATH, TexturePackLoader);
     }
 
     registerForDependencies()

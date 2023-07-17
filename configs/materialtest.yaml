@@ -1,6 +1,7 @@
 grass:
   type: physical
   texturePackSource: coast_sand_rocks
+  loadedCallback: grass/loadlog
   properties:
     map: diffuse
     displacementMap: displacement
@@ -8,6 +9,6 @@ grass:
     roughnessMap: roughness
     displacementScale: 0.1
     normalMap: normal
-    roughness: 0
-    metalness: 1
+    roughness: 1
+    metalness: 0
     envMap: yokohama/group1
