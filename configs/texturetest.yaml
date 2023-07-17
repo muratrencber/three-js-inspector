@@ -1,10 +1,10 @@
 yokohama:
   type: cubemap
-  root: "/data/texture/cubemap/yokohama"
+  root: ./data/texture/cubemap/yokohama
   defaultExtension: jpg
 coast_sand_rocks:
   type: texture
-  root: "/data/texture/coast_sand_rocks"
+  root: ./data/texture/coast_sand_rocks
   defaultExtension: jpg
   sources:
     - diffuse
