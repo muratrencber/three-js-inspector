@@ -1,3 +1,5 @@
+import { getYAMLObject } from "./request.js";
+
 /**
  * 
  * @param {any} serializedProperty 
@@ -323,11 +325,7 @@ const SCHEMAS = {};
 function TryLoadSchema(key) {
     if(SCHEMAS[key]) return;
     const path = `./schemas/${SchemaKeys[key]}.yaml`;
-    const request = new XMLHttpRequest();
-    request.open("GET", path, false);
-    request.send();
-    const schemaContent = request.responseText;
-    const schemaObject = jsyaml.load(schemaContent);
+    const schemaObject = getYAMLObject(path);
     SCHEMAS[key] = new Schema(schemaObject);
 }
 

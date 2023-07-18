@@ -1,5 +1,6 @@
 import { ConfigLoader } from './ConfigLoader.js';
 import { DependencyDictionary, getMaterialProvider, getTexturePackProvider } from './DependencyManager.js';
+import { getYAMLString } from './request.js';
 
 /**
  * @class
@@ -81,10 +82,7 @@ export class ObjectDatabase
      */
     getConfigsContent()
     {
-        const request = new XMLHttpRequest();
-        request.open("GET", this.CONFIGS_PATH, false);
-        request.send();
-        return request.responseText;
+        return getYAMLString(this.CONFIGS_PATH);
     }
 
     /** 
@@ -222,5 +220,14 @@ export class ObjectDatabase
         }
         this.loadList.splice(index, 1);
         this.changingList = false;
+    }
+
+    /**
+     * @this
+     */
+    static instance;
+    static setup()
+    {
+        return;
     }
 }
