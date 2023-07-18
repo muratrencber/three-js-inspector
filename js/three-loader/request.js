@@ -18,7 +18,7 @@ export function getYAMLString(path)
  */
 export function getYAMLObject(path)
 {
-    const content = getYAMLObject(path);
+    const content = getYAMLString(path);
     try {
         return jsyaml.load(content);
     } catch {}
