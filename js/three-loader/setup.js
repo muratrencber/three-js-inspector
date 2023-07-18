@@ -1,13 +1,9 @@
-import { MaterialDatabase } from "./MaterialDatabase";
-import { TextureDatabase } from "./TextureDatabase";
+import { registerCallback } from "./CallbackManager.js";
+import { MaterialDatabase } from "./MaterialDatabase.js";
+import { TextureDatabase } from "./TextureDatabase.js";
 
-/**
- * 
- * @param {function()} onSetupFinished 
- */
-export function setup(onSetupFinished)
+export async function setup()
 {
     TextureDatabase.setup();
     MaterialDatabase.setup();
-    onSetupFinished();
 }

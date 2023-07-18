@@ -5,10 +5,7 @@ import { LightProbeGenerator } from 'three/examples/jsm/lights/LightProbeGenerat
 import { MaterialDatabase } from './three-loader/MaterialDatabase.js';
 import { registerCallback } from './three-loader/CallbackManager.js';
 import { TexturePack } from './three-loader/TexturePack.js';
-
-TextureDatabase.instance;
-MaterialDatabase.instance;
-
+import { setup } from './three-loader/Setup.js';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera();
@@ -23,20 +20,26 @@ cube.rotateX(200);
 scene.add(cube);
 camera.position.set(0,0,5);
 
-registerCallback("yokohama/loadedAll",
-([pack]) => {
-    const tex = pack.getTexture("group1");
-    cubeMaterial.envMap = tex;
-    scene.background = tex;
-});
-registerCallback("grass/loadlog",
-([mat]) => {
-    console.log("loaded material GRASS:");
-    console.log(mat);
-});
-MaterialDatabase.instance.load("grass").then(mat => {
-    cube.material = mat;
-});
+setup().then(() => {
+    registerCallback("yokohama/loadedAll",
+    ([pack]) => {
+        const tex = pack.getTexture("group1");
+        cubeMaterial.envMap = tex;
+        scene.background = tex;
+    });
+
+    registerCallback("grass/loadlog",
+    ([mat]) => {
+        console.log("loaded material GRASS:");
+        console.log(mat);
+    });
+    MaterialDatabase.instance.load("grass").then(mat => {
+        cube.material = mat;
+    });
+})
+
+
+
 let lightProbe = null;
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
 scene.add(ambientLight);
@@ -83,13 +86,6 @@ document.getElementById("use-al").addEventListener("click", () => {
     } catch {}
     scene.add(ambientLight);
 })
-
-const size = Math.min(window.innerWidth, window.innerHeight);
-renderer.setSize(size, size);
-document.body.appendChild(renderer.domElement);
-
-render();
-
 document.addEventListener("keydown", (ev) => {
     const key = ev.keyCode;
     const deg2Rad = 3.14 / 180;
@@ -120,6 +116,12 @@ document.addEventListener("keydown", (ev) => {
         cube.rotateZ(rotateAmount);
     }
 });
+const size = Math.min(window.innerWidth, window.innerHeight);
+renderer.setSize(size, size);
+document.body.appendChild(renderer.domElement);
+
+render();
+
 
 function render() {
     requestAnimationFrame(render);
