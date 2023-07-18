@@ -84,6 +84,12 @@ export class MaterialLoader extends ConfigLoader
          */
         this.packs = [];
     }
+
+    setConfig(config)
+    {
+        super.setConfig(config);
+        this.applyExtends();
+    }
     
     /**
      * @returns {DependencyDictionary}
@@ -95,7 +101,6 @@ export class MaterialLoader extends ConfigLoader
 
     async load()
     {
-        this.applyExtends();
         const properties = this.processProperties(this.getValue("properties", {}));
         const type = this.getValue("type");
         let result = undefined;
@@ -120,6 +125,38 @@ export class MaterialLoader extends ConfigLoader
         if(!matProvider) throw new Error("Could not find a Material provider!");
         const configToMerge = matProvider.getConfig(extendsValue);
         this.config = {...configToMerge, ...this.config};
+        this.applyTexturePackSourceExtends(configToMerge);
+        this.applyPropertiesExtends(configToMerge);
+    }
+
+    applyPropertiesExtends(otherConfig)
+    {
+        if(!otherConfig.properties) return;
+        if(!this.config.properties) this.config.properties = {};
+        this.config.properties = {...otherConfig.properties, ...this.config.properties}
+    }
+
+    applyTexturePackSourceExtends(otherConfig)
+    {
+        const allTPS = [];
+
+        const tryAdd = (tps) => {
+            if(!tps) return;
+            if(allTPS.includes(tps)) return;
+            allTPS.push(tps);
+        }
+
+        const tryAppend = (tpsList) => {
+            for(const tps of tpsList) tryAdd(tps);
+        }
+
+        tryAdd(this.config.texturePackSource);
+        tryAppend(this.config.texturePackSources);
+        tryAdd(otherConfig.texturePackSource);
+        tryAppend(otherConfig.texturePackSources);
+
+        this.config.texturePackSource = allTPS.length === 1 ? allTPS[0] : undefined;
+        this.config.texturePackSources = allTPS.length < 2 ? undefined : allTPS;
     }
     
     /**

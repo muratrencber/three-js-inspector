@@ -75,7 +75,7 @@ export class ConfigLoader
     {
         if(!this.dependencies) return null;
         let splitted = key.split("/");
-        if(splitted > 1) {
+        if(splitted.length > 1) {
             const [packKey, textureKey] = splitted;
             /**
              * @type {TexturePack}
