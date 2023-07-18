@@ -223,7 +223,7 @@ export class ObjectDatabase
     }
 
     /**
-     * @this
+     * @type {ObjectDatabase}
      */
     static instance;
     static setup()

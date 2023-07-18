@@ -26,20 +26,17 @@ export class TextureDatabase extends ObjectDatabase
     }
 
     /**
-     * @private
      * @type {TextureDatabase}
      */
-    static _instance;
-
+    static instance;
     /**
      * @public
      * @returns {TextureDatabase}
      */
-    static get instance() {
-        if(TextureDatabase._instance === undefined) {
-            TextureDatabase._instance = new TextureDatabase();
-            TextureDatabase._instance.init();
+    static setup() {
+        if(TextureDatabase.instance === undefined) {
+            TextureDatabase.instance = new TextureDatabase();
+            TextureDatabase.instance.init();
         }
-        return TextureDatabase._instance;
     }
 }

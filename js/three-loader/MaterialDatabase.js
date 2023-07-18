@@ -20,22 +20,18 @@ export class MaterialDatabase extends ObjectDatabase {
         register("materials", this);
     }
 
-
     /**
-     * @private
      * @type {MaterialDatabase}
      */
-    static _instance;
-
+    static instance;
     /**
      * @public
      * @returns {MaterialDatabase}
      */
-    static get instance() {
-        if(MaterialDatabase._instance === undefined) {
-            MaterialDatabase._instance = new MaterialDatabase();
-            MaterialDatabase._instance.init();
+    static setup() {
+        if(MaterialDatabase.instance === undefined) {
+            MaterialDatabase.instance = new MaterialDatabase();
+            MaterialDatabase.instance.init();
         }
-        return MaterialDatabase._instance;
     }
 }
