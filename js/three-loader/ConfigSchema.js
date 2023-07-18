@@ -311,7 +311,8 @@ export class Schema
 
 export const SchemaKeys = {
     TEXTURE_PACK: "TEXTURE_PACK",
-    MATERIAL: "MATERIAL"
+    MATERIAL: "MATERIAL",
+    MODEL: "MODEL"
 };
 /**
  * @type {Object.<string, Schema>}

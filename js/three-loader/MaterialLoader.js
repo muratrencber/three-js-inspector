@@ -95,7 +95,10 @@ export class MaterialLoader extends ConfigLoader
      */
     getDependencies()
     {
-        return new DependencyDictionary(this.getReferencedTexturePackKeys(), this.getReferencedMaterialKeys());
+        return new DependencyDictionary({
+            texturePacks: this.getReferencedTexturePackKeys(),
+            materials: this.getReferencedMaterialKeys()
+        });
     }
 
     async load()

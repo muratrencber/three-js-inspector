@@ -1,9 +1,11 @@
 import { registerCallback } from "./CallbackManager.js";
 import { MaterialDatabase } from "./MaterialDatabase.js";
+import { ModelDatabase } from "./ModelDatabase.js";
 import { TextureDatabase } from "./TextureDatabase.js";
 
 export async function setup()
 {
     TextureDatabase.setup();
     MaterialDatabase.setup();
+    ModelDatabase.setup();
 }

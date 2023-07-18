@@ -6,31 +6,34 @@ import { TexturePack } from "./TexturePack.js";
  */
 export const DependencyType = {
     texturePacks: "texturePacks",
-    materials: "materials"
+    materials: "materials",
+    models: "models"
 } 
 
 export class DependencyDictionary
 {
     /**
      * 
-     * @typedef {{texturePacks: Object.<string,TexturePack>, materials: Object.<string, THREE.Material>}} DependencyDictionaryType
+     * @typedef {{texturePacks: Array<string>,materials: Array<string>,models: Array<string>}} DependencyDictionaryType
+     * @param {DependencyDictionaryType} typesAndKeys 
      */
-    constructor(texturePackKeys, materialKeys)
+    constructor(typesAndKeys = {})
     {
-        texturePackKeys ??= [];
-        materialKeys ??= [];
         /**
          * @type {DependencyDictionaryType}
          * @private
          */
         this.dict = {
             texturePacks: {},
-            materials: {}
+            materials: {},
+            models: {}
         };
-        for(const texturePackKey of texturePackKeys)
+        for(const texturePackKey of (typesAndKeys.texturePacks ?? []))
             this.dict.texturePacks[texturePackKey] = undefined;
-        for(const materialKey of materialKeys)
+        for(const materialKey of (typesAndKeys.materials ?? []))
             this.dict.materials[materialKey] = undefined;
+        for(const modelKey of (typesAndKeys.models ?? []))
+            this.dict.models[modelKey] = undefined;
     }
 
     async loadAll()
@@ -107,11 +110,17 @@ class TexturePackProvider extends DependencyProvider {}
 class MaterialProvider extends DependencyProvider {}
 
 /**
- * @type {{texturePacks: TexturePackProvider, materials: MaterialProvider}}
+ * @extends DependencyProvider<THREE.Group>
+ */
+class ModelProvider extends DependencyProvider {}
+
+/**
+ * @type {{texturePacks: TexturePackProvider, materials: MaterialProvider, models: ModelProvider}}
  */
 const PROVIDERS = {
     "texturePacks": null,
-    "materials": null
+    "materials": null,
+    "models": null
 }
 
 /**
@@ -149,4 +158,12 @@ export function getTexturePackProvider()
 export function getMaterialProvider()
 {
     return PROVIDERS.materials;
+}
+
+/**
+ * @returns {ModelProvider | null}
+ */
+export function getModelProvider()
+{
+    return PROVIDERS.models;
 }
