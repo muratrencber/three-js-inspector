@@ -1,5 +1,5 @@
 type:
-  values: [standard, physical]
+  values: [standard, physical, basic]
   default: standard
   optional: useDefault
 extends:

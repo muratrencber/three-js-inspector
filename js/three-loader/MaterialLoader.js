@@ -110,6 +110,9 @@ export class MaterialLoader extends ConfigLoader
             case "physical":
                 result = new THREE.MeshPhysicalMaterial(properties);
                 break;
+            case "basic":
+                result = new THREE.MeshBasicMaterial(properties);
+                break;
             case "standard":
             default:
                 result = new THREE.MeshStandardMaterial(properties);
