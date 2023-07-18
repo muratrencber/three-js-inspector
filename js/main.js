@@ -13,6 +13,7 @@ const camera = new THREE.PerspectiveCamera();
 const renderer = new THREE.WebGLRenderer({antialias: true});
 
 const controls = new OrbitControls(camera, renderer.domElement);
+camera.position.set(0,0,5);
 
 function getMat()
 {
@@ -39,7 +40,7 @@ setup().then(() => {
     ModelDatabase.instance.load("mario").then(obj => {
         scene.add(obj);
         obj.scale.set(0.1,0.1,0.1);
-        obj.position.set(0,-5,5);
+        obj.position.set(0,-5,-10);
     });
 })
 
