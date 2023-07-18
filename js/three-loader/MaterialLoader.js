@@ -1,9 +1,8 @@
 import { ConfigLoader } from './ConfigLoader.js';
 import { SchemaKeys } from './ConfigSchema.js';
 import * as THREE from 'three';
-import { getTexturePackProvider, getMaterialProvider, DependencyDictionary } from './DependencyManager.js';
+import { getMaterialProvider, DependencyDictionary } from './DependencyManager.js';
 import { TexturePack } from './TexturePack.js';
-import { invokeCallback } from './CallbackManager.js';
 
 const MATERIAL_PROPERTIES_TYPE_MAP = {
     clippingPlanes: Array,
@@ -113,7 +112,7 @@ export class MaterialLoader extends ConfigLoader
                 result = new THREE.MeshStandardMaterial(properties);
                 break;
         }
-        invokeCallback(this.getValue("loadedCallback"), result);
+        this.invokeCallbackFunction("loadedCallback", result);
         return result;
     }
 

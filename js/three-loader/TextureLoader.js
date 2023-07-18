@@ -1,4 +1,3 @@
-import { invokeCallback } from './CallbackManager.js';
 import {ConfigLoader} from './ConfigLoader.js';
 import {SchemaKeys} from './ConfigSchema.js';
 import { TexturePack } from './TexturePack.js';
@@ -45,9 +44,9 @@ export class TexturePackLoader extends ConfigLoader
             const sourceArray = isDict ? sources[iteratorElement] : iteratorElement;
             const sanitizedSources = this.sanitizeSource(sourceArray);
             const key = isDict ? iteratorElement : this.generateKeyFromSource(sourceArray, index);
-            const texture = await loader.loadAsync(sanitizedSources);
+            const texture = await loader.loadAsync(sanitizedSources, (event) => this.invokeCallbackFunction("progressCallback", key, event));
             resultPack.addTexture(key, texture)
-            invokeCallback(this.getValue("loadedOneCallback"), key, texture, resultPack);
+            this.invokeCallbackFunction("loadedOneCallback", key, texture, resultPack);
         }
         const globalProperties = this.getValue("globalProperties");
         for(const key in globalProperties) {
@@ -66,7 +65,7 @@ export class TexturePackLoader extends ConfigLoader
             for(const key in targetProperties)
                 targetTexture[key] = targetProperties[key];
         }
-        invokeCallback(this.getValue("loadedAllCallback"), resultPack);
+        this.invokeCallbackFunction("loadedAllCallback", resultPack);
         return resultPack;
     }
 

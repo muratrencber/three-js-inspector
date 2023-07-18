@@ -1,3 +1,4 @@
+import { invokeCallback } from './CallbackManager.js';
 import {Schema, SchemaKeys, GetSchema} from './ConfigSchema.js';
 import { DependencyDictionary, DependencyType } from './DependencyManager.js';
 import { TexturePack } from './TexturePack.js';
@@ -90,6 +91,13 @@ export class ConfigLoader
             if(pack.hasTexture(key)) return pack.getTexture(key);
         }
         return null;
+    }
+
+    invokeCallbackFunction(functionKey, ...values)
+    {
+        const registeredKey = this.getValue(functionKey, undefined);
+        if(!registeredKey) return;
+        invokeCallback(registeredKey, values);
     }
 
     /**
