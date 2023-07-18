@@ -1,6 +1,6 @@
 import { ObjectDatabase } from './ObjectDatabase.js';
 import { TexturePackLoader } from './TextureLoader.js';
-import { register } from './DependencyManager.js';
+import { DependencyType, register } from './DependencyManager.js';
 import * as THREE from 'three';
 import { TexturePack } from './TexturePack.js';
 
@@ -22,7 +22,7 @@ export class TextureDatabase extends ObjectDatabase
 
     registerForDependencies()
     {
-        register("texturePacks", this);
+        register(DependencyType.texturePacks, this);
     }
 
     /**

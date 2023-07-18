@@ -71,7 +71,7 @@ function defaultProcessor(value)
 
 function textureProcessor(value)
 {
-    return this.getTextureFromKey(value);
+    return this.getTexture(value);
 }
 
 export class MaterialLoader extends ConfigLoader
@@ -93,32 +93,8 @@ export class MaterialLoader extends ConfigLoader
         return new DependencyDictionary(this.getReferencedTexturePackKeys(), this.getReferencedMaterialKeys());
     }
 
-    setTexturePacks()
-    {
-        this.packs = [];
-        const packKeys = this.getReferencedTexturePackKeys();
-        for(const key of packKeys)
-            this.packs.push(getTexturePackProvider().getLoadedConfig(key));
-    }
-
-    /**
-     * 
-     * @param {string} key 
-     */
-    getTextureFromKey(key)
-    {
-        const splitted = key.split("/");
-        if(splitted.length > 1) {
-            return getTexturePackProvider().getLoadedConfig(splitted[0]).getTexture(splitted[1]);
-        }
-        const selectedTexturePack = this.packs.find(pack => pack.hasTexture(key));
-        if(!selectedTexturePack) return undefined;
-        return selectedTexturePack.getTexture(key);
-    }
-
     async load()
     {
-        this.setTexturePacks();
         this.applyExtends();
         const properties = this.processProperties(this.getValue("properties", {}));
         const type = this.getValue("type");

@@ -1,4 +1,4 @@
-import { register } from "./DependencyManager.js";
+import { register, DependencyType } from "./DependencyManager.js";
 import { ObjectDatabase } from "./ObjectDatabase.js";
 import { MaterialLoader } from './MaterialLoader.js'; 
 import * as THREE from 'three';
@@ -17,7 +17,7 @@ export class MaterialDatabase extends ObjectDatabase {
 
     registerForDependencies()
     {
-        register("materials", this);
+        register(DependencyType.materials, this);
     }
 
     /**

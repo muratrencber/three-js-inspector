@@ -1,5 +1,7 @@
 import {Schema, SchemaKeys, GetSchema} from './ConfigSchema.js';
-import { DependencyDictionary } from './DependencyManager.js';
+import { DependencyDictionary, DependencyType } from './DependencyManager.js';
+import { TexturePack } from './TexturePack.js';
+import * as THREE from 'three';
 
 /**
  * @template ConfigType
@@ -17,6 +19,11 @@ export class ConfigLoader
          * @type {Schema}
          */
         this.schema = GetSchema(schemaKey);
+        /**
+         * @type {DependencyDictionary}
+         * @private
+         */
+        this.dependencies = new DependencyDictionary();
     }
 
     /**
@@ -40,12 +47,60 @@ export class ConfigLoader
     }
 
     /**
+     * @async
+     * @public
+     */
+    async loadDependencies()
+    {
+        this.dependencies = this.getDependencies();
+        await this.dependencies.loadAll();
+    }
+
+    /**
      * 
      * @returns { DependencyDictionary }
+     * @protected
      */
     getDependencies()
     {
         return new DependencyDictionary();
+    }
+
+    /**
+     * 
+     * @param {string} key 
+     * @returns {THREE.Texture} 
+     */
+    getTexture(key)
+    {
+        if(!this.dependencies) return null;
+        let splitted = key.split("/");
+        if(splitted > 1) {
+            const [packKey, textureKey] = splitted;
+            /**
+             * @type {TexturePack}
+             */
+            const pack = this.dependencies.getObject(DependencyType.texturePacks, packKey);
+            return pack.getTexture(textureKey);
+        }
+        const packs = this.dependencies.getTexturePackDictionary();
+        for(const packKey in packs)
+        {
+            const pack = packs[packKey];
+            if(pack.hasTexture(key)) return pack.getTexture(key);
+        }
+        return null;
+    }
+
+    /**
+     * 
+     * @param {string} key 
+     * @returns {THREE.Material}
+     */
+    getMaterial(key)
+    {
+        if(!this.dependencies) return null;
+        return this.dependencies.getObject(DependencyType.materials, key);
     }
 
     /**

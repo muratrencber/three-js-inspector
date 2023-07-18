@@ -1,5 +1,4 @@
 import { ConfigLoader } from './ConfigLoader.js';
-import { DependencyDictionary, getMaterialProvider, getTexturePackProvider } from './DependencyManager.js';
 import { getYAMLString } from './request.js';
 
 /**
@@ -136,28 +135,10 @@ export class ObjectDatabase
         if(!config) return Promise.reject("Config does not exist!");
         const loader = this.initLoader();
         loader.setConfig(config);
-        if(checkDependencies) await this.loadDependencies(loader.getDependencies());
+        if(checkDependencies) await loader.loadDependencies();
         let result = await loader.load();
         this.loadedConfigMap[key] = result;
         return result;
-    }
-
-    /**
-     * 
-     * @param {DependencyDictionary} dependencyDictionary 
-     */
-    async loadDependencies(dependencyDictionary)
-    {
-        const texturePacks = dependencyDictionary.textures;
-        for(const packKey of texturePacks)
-        {
-            await getTexturePackProvider().load(packKey);
-        }
-        const materials = dependencyDictionary.materials;
-        for(const materialKey of materials)
-        {
-            await getMaterialProvider().load(materialKey);
-        }
     }
 
     /**
