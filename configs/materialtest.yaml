@@ -1,4 +1,12 @@
+yokohamaReflector:
+  texturePackSource: yokohama
+  texturePackSources: [yokohama, coast_sand_rocks]
+  properties:
+    roughness: 0
+    metalness: 1
+    envMap: yokohama/group1
 grass:
+  extends: yokohamaReflector
   type: physical
   texturePackSource: coast_sand_rocks
   loadedCallback: grass/loadlog
@@ -9,6 +17,3 @@ grass:
     roughnessMap: roughness
     displacementScale: 0.1
     normalMap: normal
-    roughness: 1
-    metalness: 0
-    envMap: yokohama/group1
