@@ -1,0 +1,4 @@
+mario:
+  source: ./data/model/mario.fbx
+  material: mario
+  materials: [mario, mario, mario, mario_eye, mario, mario_eye, mario]

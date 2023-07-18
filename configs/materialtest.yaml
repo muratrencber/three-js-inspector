@@ -1,6 +1,5 @@
 yokohamaReflector:
   texturePackSource: yokohama
-  texturePackSources: [yokohama, coast_sand_rocks]
   properties:
     roughness: 0
     metalness: 1
@@ -17,3 +16,26 @@ grass:
     roughnessMap: roughness
     displacementScale: 0.1
     normalMap: normal
+error:
+  extends: yokohamaReflector
+  type: physical
+  properties:
+    map: common/error
+    roughness: 0
+    metalness: 1
+mario:
+  type: physical
+  texturePackSource: mario
+  properties:
+    map: body_diffuse
+    normalMap: body_normal
+    specularColorMap: body_spe
+    roughness: 0.5
+    metalness: 0.5
+mario_eye:
+  texturePackSource: mario
+  properties:
+    map: eye
+    normalMap: eye1_normal
+    envMap: yokohama/group1
+    roughness: 0

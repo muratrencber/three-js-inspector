@@ -14,3 +14,21 @@ coast_sand_rocks:
     - roughness
     - ao
     - arm
+mario:
+  root: ./data/texture/mario/
+  defaultExtension: png
+  sources:
+    body_normal: body_normal
+    body_diffuse: body
+    body_spe: body_spe
+    eye1: eye1
+    eye1_spe: eye1_spe
+    eye1_normal: eye1_normal
+    eye2: eye2
+    eye2_spe: eye2_spe
+    eye2_normal: eye2_normal
+    eye: eye
+common:
+  root: ./data/texture
+  sources:
+    - error.webp

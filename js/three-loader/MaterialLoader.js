@@ -152,6 +152,7 @@ export class MaterialLoader extends ConfigLoader
         }
 
         const tryAppend = (tpsList) => {
+            if(!tpsList) return;
             for(const tps of tpsList) tryAdd(tps);
         }
 

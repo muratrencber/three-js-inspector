@@ -3,7 +3,7 @@ import { ModelLoader } from "./ModelLoader.js";
 import { ObjectDatabase } from "./ObjectDatabase.js";
 import * as THREE from 'three';
 
-const CONFIGS_PATH = "./configs/materialtest.yaml";
+const CONFIGS_PATH = "./configs/modelstest.yaml";
 
 /**
  * @extends ObjectDatabase<THREE.Group>
@@ -24,12 +24,12 @@ export class ModelDatabase extends ObjectDatabase
      * @type {ModelDatabase}
      */
     static instance;
-    static init()
+    static setup()
     {
         if(!ModelDatabase.instance)
         {
             ModelDatabase.instance = new ModelDatabase();
-            ModelDatabase.instance.initLoader();
+            ModelDatabase.instance.init();
         }
     }
 }

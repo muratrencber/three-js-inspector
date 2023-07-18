@@ -2,7 +2,7 @@ source:
   valueType: string
 material:
   optional: useDefault
-  default: errorMat
+  default: error
 materials:
   valueType: array[string]
   optional: true

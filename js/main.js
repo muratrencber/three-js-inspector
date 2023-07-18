@@ -5,26 +5,29 @@ import { LightProbeGenerator } from 'three/examples/jsm/lights/LightProbeGenerat
 import { MaterialDatabase } from './three-loader/MaterialDatabase.js';
 import { registerCallback } from './three-loader/CallbackManager.js';
 import { TexturePack } from './three-loader/TexturePack.js';
-import { setup } from './three-loader/Setup.js';
+import { setup } from './three-loader/setup.js';
+import { ModelDatabase } from './three-loader/ModelDatabase.js';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera();
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({antialias: true});
+
 const controls = new OrbitControls(camera, renderer.domElement);
 
-//SECTION TESTING
-const cubeGeometry = new THREE.PlaneGeometry(1,1,256,256);
-const cubeMaterial = new THREE.MeshPhysicalMaterial({color: 0x00ff00});
-const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-cube.rotateX(200);
-scene.add(cube);
-camera.position.set(0,0,5);
+function getMat()
+{
+    return MaterialDatabase.instance?.getLoadedConfig("mario");
+}
+
+function getMar()
+{
+    return ModelDatabase.instance?.getLoadedConfig("mario");
+}
 
 setup().then(() => {
     registerCallback("yokohama/loadedAll",
     ([pack]) => {
         const tex = pack.getTexture("group1");
-        cubeMaterial.envMap = tex;
         scene.background = tex;
     });
 
@@ -33,8 +36,10 @@ setup().then(() => {
         console.log("loaded material GRASS:");
         console.log(mat);
     });
-    MaterialDatabase.instance.load("grass").then(mat => {
-        cube.material = mat;
+    ModelDatabase.instance.load("mario").then(obj => {
+        scene.add(obj);
+        obj.scale.set(0.1,0.1,0.1);
+        obj.position.set(0,-5,5);
     });
 })
 
@@ -48,11 +53,11 @@ document.getElementById("ambient-input").addEventListener("input", (nv) => {
 })
 document.getElementById("roughness-input").addEventListener("input", (nv) => {
     const value = parseFloat(nv.target.value);
-    cube.material.roughness = value;
+    getMat().roughness = value;
 })
 document.getElementById("metalness-input").addEventListener("input", (nv) => {
     const value = parseFloat(nv.target.value);
-    cube.material.metalness = value;
+    getMat().metalness = value;
 })
 document.getElementById("use-lp").addEventListener("click", () => {
     try {
@@ -91,29 +96,30 @@ document.addEventListener("keydown", (ev) => {
     const deg2Rad = 3.14 / 180;
     const rotateAmount = deg2Rad * 3;
     console.log(key);
+    let target = getMar();
     if(key == 37)
     {
-        cube.rotateY(-rotateAmount);
+        target.rotateY(-rotateAmount);
     }
     else if(key == 39)
     {
-        cube.rotateY(rotateAmount);
+        target.rotateY(rotateAmount);
     }
     else if(key == 38)
     {
-        cube.rotateX(rotateAmount);
+        target.rotateX(rotateAmount);
     }
     else if(key == 40)
     {
-        cube.rotateX(-rotateAmount);
+        target.rotateX(-rotateAmount);
     }
     else if(key == 75)
     {
-        cube.rotateZ(-rotateAmount);
+        target.rotateZ(-rotateAmount);
     }
     else if(key == 76)
     {
-        cube.rotateZ(rotateAmount);
+        target.rotateZ(rotateAmount);
     }
 });
 const size = Math.min(window.innerWidth, window.innerHeight);

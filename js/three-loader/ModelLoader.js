@@ -2,8 +2,87 @@ import { ConfigLoader } from "./ConfigLoader.js";
 import { SchemaKeys } from "./ConfigSchema.js";
 import * as THREE from 'three';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { DependencyDictionary } from "./DependencyManager.js";
 import { getExtension, normalizePath } from "./path.js";
+
+class MaterialMap
+{
+    /**
+     * 
+     * @param {THREE.Material} defaultMaterial 
+     */
+    constructor(defaultMaterial)
+    {
+        /**
+         * @type {Array<{original: THREE.Material, new: THREE.Material | undefined}>}
+         */
+        this.map = [];
+        /**
+         * @type {THREE.Material}
+         */
+        this.defaultMaterial = defaultMaterial;
+    }
+
+    /**
+     * 
+     * @param {THREE.Material} material 
+     * @returns {boolean}
+     */
+    hasMaterial(material)
+    {
+        if(this.getNewMaterial(material)) return true;
+        return false;
+    }
+
+    /**
+     * 
+     * @param {THREE.Material} material 
+     * @returns {{{original: THREE.Material, new: THREE.Material | undefined}}}
+     */
+    getMapFor(material)
+    {
+        return this.map.find(entry => entry.original === material);
+    }
+
+    /**
+     * 
+     * @param {THREE.Material} material 
+     * @returns 
+     */
+    setMapFor(material)
+    {
+        if(this.hasMaterial(material)) return;
+        this.map.push({
+            original: material,
+            new: this.defaultMaterial
+        });
+    }
+
+    /**
+     * 
+     * @param {THREE.Material} material 
+     * @param {number} index 
+     * @returns 
+     */
+    setNewMaterialFromIndex(material, index)
+    {
+        if(index < 0 || index >= this.map.length) return;
+        this.map[index].new = material;
+    }
+
+    /**
+     * 
+     * @param {THREE.Material} material 
+     * @returns {THREE.Material}
+     */
+    getNewMaterial(material)
+    {
+        const map = this.getMapFor(material);
+        if(map) return map.new;
+        return undefined;
+    }
+}
 
 /**
  * @extends ConfigLoader<THREE.Mesh>
@@ -30,7 +109,7 @@ export class ModelLoader extends ConfigLoader
         const material = this.getValue("material", undefined);
         const materials = this.getValue("materials", []);
         const combined = material ? [material, ...materials] : materials;
-        return new Array(new Set(combined))
+        return Array.from(new Set(combined));
     }
 
     async load()
@@ -47,7 +126,7 @@ export class ModelLoader extends ConfigLoader
 
             case "obj":
             default:
-                loader = new THREE.ObjectLoader();
+                loader = new OBJLoader();
                 break;
         }
         /**
@@ -66,12 +145,45 @@ export class ModelLoader extends ConfigLoader
     {
         const defaultMaterial = this.getMaterial(this.getValue("material"));
         const materials = this.getValue("materials", []).map(matKey => this.getMaterial(matKey));
-        const children = group.children;
-        for(let i = 0; i < children.length; i++)
+        const materialMap = this.createMaterialMap(group, defaultMaterial);
+        console.warn(`[${this.getValue("source", "")}]: MATCOUNT ${materialMap.map.length}`);
+        for(let i = 0; i < materials.length; i++)
         {
-            let selectedMaterial = defaultMaterial;
-            if(i < materials.length) selectedMaterial = materials[i];
+            materialMap.setNewMaterialFromIndex(materials[i], i);
         }
+        this.setFromMaterialMap(group, materialMap, defaultMaterial);
+    }
+
+    /**
+     * 
+     * @param {THREE.Group} group 
+     * @param {THREE.Material} defaultMaterial 
+     * @returns {MaterialMap}
+     */
+    createMaterialMap(group, defaultMaterial)
+    {
+        const map = new MaterialMap(defaultMaterial);
+        group.traverse((obj) => {
+            if(!obj.isMesh) return;
+            map.setMapFor(obj.material);
+        });
+        return map;
+    }
+
+    /**
+     * 
+     * @param {THREE.Group} group 
+     * @param {MaterialMap} materialMap 
+     * @param {THREE.Material} defaultMaterial 
+     */
+    setFromMaterialMap(group, materialMap, defaultMaterial)
+    {
+        group.traverse((obj) => {
+            if(!obj.isMesh) return;
+            let selectedMaterial = materialMap.getNewMaterial(obj.material);
+            if(!selectedMaterial) selectedMaterial = defaultMaterial;
+            obj.material = selectedMaterial;
+        })
     }
 
     /**
@@ -80,7 +192,7 @@ export class ModelLoader extends ConfigLoader
      */
     getSourcePathAndExtension()
     {
-        const path = this.getValue("path", "");
+        const path = this.getValue("source", "");
         const extension = getExtension(path);
         if(extension === "") throw new Error(`PATH: "${path}": Extension not defined!`);
         return {
