@@ -1,6 +1,7 @@
 type:
   values: [standard, physical]
   default: standard
+  optional: useDefault
 extends:
   validType: string
   optional: true
