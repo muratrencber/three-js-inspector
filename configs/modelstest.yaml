@@ -1,4 +1,20 @@
 mario:
   source: ./data/model/mario.fbx
-  material: mario
-  materials: [mario, mario, mario, mario_eye, mario, mario_eye, mario]
+  material: yokohamaReflector
+  rotateX: 90
+  rotateY: 180
+  rotateLocal: true
+ring:
+  source: ./data/model/ring.obj
+  material: error
+  rotateX: 90
+  rotateY: 180
+  rotateLocal: true
+ring2:
+  source: ./data/model/ring2.glb
+  materials: [ring, ring, ring, doji_diamond]
+  materialMap:
+    Material_2: doji_diamond
+    material_0: ring
+    White_Gold: ring
+    White_Gold_2: ring

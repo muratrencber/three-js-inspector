@@ -1,20 +1,22 @@
+import { SceneNode } from "./SceneNode.js";
 import { TexturePack } from "./TexturePack.js";
 
 /**
- * @typedef {"texturePacks"|"materials"} DependencyTypeValues
+ * @typedef {"texturePacks"|"materials"|"models"|"nodes"} DependencyTypeValues
  * @global
  */
 export const DependencyType = {
     texturePacks: "texturePacks",
     materials: "materials",
-    models: "models"
+    models: "models",
+    nodes: "nodes"
 } 
 
 export class DependencyDictionary
 {
     /**
      * 
-     * @typedef {{texturePacks: Array<string>,materials: Array<string>,models: Array<string>}} DependencyDictionaryType
+     * @typedef {{texturePacks: Array<string>,materials: Array<string>,models: Array<string>, nodes: Array<string>}} DependencyDictionaryType
      * @param {DependencyDictionaryType} typesAndKeys 
      */
     constructor(typesAndKeys = {})
@@ -26,7 +28,8 @@ export class DependencyDictionary
         this.dict = {
             texturePacks: {},
             materials: {},
-            models: {}
+            models: {},
+            nodes: {}
         };
         for(const texturePackKey of (typesAndKeys.texturePacks ?? []))
             this.dict.texturePacks[texturePackKey] = undefined;
@@ -34,6 +37,8 @@ export class DependencyDictionary
             this.dict.materials[materialKey] = undefined;
         for(const modelKey of (typesAndKeys.models ?? []))
             this.dict.models[modelKey] = undefined;
+        for(const nodeKey of (typesAndKeys.nodes ?? []))
+            this.dict.nodes[nodeKey] = undefined;
     }
 
     async loadAll()
@@ -115,17 +120,23 @@ class MaterialProvider extends DependencyProvider {}
 class ModelProvider extends DependencyProvider {}
 
 /**
- * @type {{texturePacks: TexturePackProvider, materials: MaterialProvider, models: ModelProvider}}
+ * @extends DependencyProvider<SceneNode>
+ */
+class NodeProvider extends DependencyProvider {}
+
+/**
+ * @type {{texturePacks: TexturePackProvider, materials: MaterialProvider, models: ModelProvider, nodes: NodeProvider}}
  */
 const PROVIDERS = {
     "texturePacks": null,
     "materials": null,
-    "models": null
+    "models": null,
+    "nodes": null
 }
 
 /**
  * @param {DependencyTypeValues} key
- * @param {TexturePackProvider|MaterialProvider} provider 
+ * @param {TexturePackProvider|MaterialProvider|ModelProvider|NodeProvider} provider 
  */
 export function register(key, provider)
 {
@@ -166,4 +177,12 @@ export function getMaterialProvider()
 export function getModelProvider()
 {
     return PROVIDERS.models;
+}
+
+/**
+ * @returns {NodeProvider | null}
+ */
+export function getNodeProvider()
+{
+    return PROVIDERS.nodes;
 }

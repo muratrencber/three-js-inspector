@@ -3,7 +3,7 @@
  * @param {string} path
  * @returns {string} 
  */
-export function getYAMLString(path)
+export function getStringContent(path)
 {
     const request = new XMLHttpRequest();
     request.open("GET", path, false);
@@ -18,7 +18,7 @@ export function getYAMLString(path)
  */
 export function getYAMLObject(path)
 {
-    const content = getYAMLString(path);
+    const content = getStringContent(path);
     try {
         return jsyaml.load(content);
     } catch {}

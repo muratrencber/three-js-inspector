@@ -21,6 +21,22 @@ export class ModelDatabase extends ObjectDatabase
     }
 
     /**
+     * 
+     * @param {string} key 
+     * @returns {THREE.Group}
+     */
+    resetRotation(key)
+    {
+        const config = super.getConfig(key);
+        const group = super.getLoadedConfig(key);
+        group.rotation.set(0,0,0);
+        const mL = new ModelLoader();
+        mL.setConfig(config);
+        mL.applyRotation(group);
+        return group;
+    }
+
+    /**
      * @type {ModelDatabase}
      */
     static instance;

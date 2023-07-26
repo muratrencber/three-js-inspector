@@ -1,24 +1,28 @@
 yokohamaReflector:
-  texturePackSource: yokohama
   properties:
     roughness: 0
     metalness: 1
-    envMap: yokohama/group1
+    envMap: studio/studio
+  loadedCallback: reflector/loaded
+ring:
+  extends: yokohamaReflector
 grass:
   extends: yokohamaReflector
   type: physical
   texturePackSource: coast_sand_rocks
-  loadedCallback: grass/loadlog
+  loadedCallback: metalStuds/loadedMaterial
   properties:
     map: diffuse
     displacementMap: displacement
     aoMap: ao
     roughnessMap: roughness
-    displacementScale: 0.1
+    displacementScale: 0.02
     normalMap: normal
+    roughness: 0.5
+    metalness: 0.5
 error:
-  extends: yokohamaReflector
   type: physical
+  extends: yokohamaReflector
   properties:
     map: common/error
     roughness: 0
@@ -39,3 +43,69 @@ mario_eye:
     normalMap: eye1_normal
     envMap: yokohama/group1
     roughness: 0
+metal_studs:
+  type: physical
+  texturePackSource: metal_studs
+  extends: yokohamaReflector
+  loadedCallback: metalStuds/lodadeMaterial
+  properties:
+    map: albedo
+    normalMap: normal
+    aoMap: ao
+    roughnessMap: rough
+    metalnessMap: metalness
+    roughness: 0
+    metalness: 1
+    sheen: 1
+herringbone:
+  type: physical
+  texturePackSource: herringbone
+  loadedCallback: metalStuds/loadedMaterial
+  properties:
+    map: diffuse
+    normalMap: normal
+    displacementMap: displacement
+    aoMap: ap
+    roughnessMap: rough
+    displacementScale: 0.02
+    anisotropyMap: arm
+    metalness: 0
+    envMap: studio/studio
+wood_floor:
+  type: physical
+  texturePackSource: wood_floor
+  loadedCallback: metalStuds/loadedMaterial
+  properties:
+    map: diffuse
+    normalMap: normal
+    displacementMap: displacement
+    aoMap: ao
+    roughnessMap: rough
+    displacementScale: 0.4
+    anisotropyMap: arm
+    metalness: 0
+    envMap: scene/cubeCamera
+stone_tiles:
+  type: physical
+  texturePackSource: stone_tiles
+  loadedCallback: stoneTiles/loadedMaterial
+  properties:
+    map: diffuse
+    normalMap: normal
+    aoMap: ao
+    roughnessMap: rough
+    anisotropyMap: arm
+    metalness: 0
+    envMap: scene/cubeCamera
+doji_diamond:
+  type: physical
+  texturePackSource: doji
+  properties:
+    map: diffuse
+    emissiveMap: emissive
+    roughnessMap: roughness
+    envMap: studio/studio
+    emissiveIntensity: 100
+    emissive: 0x0f00ff
+    roughness: 0
+    metalness: 1

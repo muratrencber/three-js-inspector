@@ -3,6 +3,27 @@ source:
 material:
   optional: useDefault
   default: error
+materialMap:
+  valueType: object
+  default: {}
+  optional: useDefault
 materials:
   valueType: array[string]
-  optional: true
+  default: []
+  optional: useDefault
+rotationX:
+  valueType: number
+  default: 0
+  optional: useDefault
+rotationY:
+  valueType: number
+  default: 0
+  optional: useDefault
+rotationZ:
+  valueType: number
+  default: 0
+  optional: useDefault
+rotateLocal:
+  valueType: boolean
+  default: false
+  optional: useDefault

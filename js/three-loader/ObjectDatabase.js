@@ -1,5 +1,5 @@
 import { ConfigLoader } from './ConfigLoader.js';
-import { getYAMLString } from './request.js';
+import { getStringContent } from './request.js';
 
 /**
  * @class
@@ -49,6 +49,10 @@ export class ObjectDatabase
          * @protected
          */
         this.changingList = false;
+        /**
+         * @type {Object.<string, Promise<ObjectType>>}
+         */
+        this.currentlyLoading = {};
         this.registerForDependencies();
     }
 
@@ -58,6 +62,7 @@ export class ObjectDatabase
     init()
     {
         this.configMap = this.getConfigs();
+        console.log(this.configMap);
     }
 
     /**
@@ -71,6 +76,17 @@ export class ObjectDatabase
     }
 
     /**
+     * 
+     * @param {string} key 
+     * @param {ObjectType} object 
+     */
+    addLoadedObject(key, object)
+    {
+        if(this.loadedConfigMap[key]) return;
+        this.loadedConfigMap[key] = object;
+    }
+
+    /**
      * @abstract
      */
     registerForDependencies() {}
@@ -81,7 +97,7 @@ export class ObjectDatabase
      */
     getConfigsContent()
     {
-        return getYAMLString(this.CONFIGS_PATH);
+        return getStringContent(this.CONFIGS_PATH);
     }
 
     /** 
@@ -100,9 +116,10 @@ export class ObjectDatabase
      */
     getConfig(key, loadedOnly = false)
     {
+        console.log(this.loaderConstructor.name, "Checking for key:",key);
         if(!this.configMap) return undefined;
         if(loadedOnly && !this.loadedConfigMap[key]) return undefined;
-        return this.configMap[key];
+        return {...this.configMap[key]};
     }
 
     /**
@@ -112,6 +129,16 @@ export class ObjectDatabase
     isConfigLoaded(key)
     {
         return this.getConfig(key, true) !== undefined;
+    }
+    
+    /**
+     * 
+     * @param {string} key 
+     * @returns {boolean}
+     */
+    isConfigLoading(key)
+    {
+        return this.currentlyLoading[key] !== undefined;
     }
 
     /**
@@ -131,6 +158,16 @@ export class ObjectDatabase
     async load(key, checkDependencies = true)
     {
         if(this.isConfigLoaded(key)) return Promise.resolve(this.getLoadedConfig(key));
+        if(this.isConfigLoading(key)) return this.currentlyLoading[key];
+        const promise = this.loadInternal(key, checkDependencies);
+        this.currentlyLoading[key] = promise;
+        const result = await promise;
+        delete this.currentlyLoading[key];
+        return result;
+    }
+
+    async loadInternal(key, checkDependencies = true)
+    {
         const config = this.getConfig(key);
         if(!config) return Promise.reject("Config does not exist!");
         const loader = this.initLoader();

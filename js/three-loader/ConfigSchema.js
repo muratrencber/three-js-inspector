@@ -77,8 +77,7 @@ class SchemaEntryValueMap {
     }
 
     getValue(object) {
-        console.log(object);
-        console.log(this.targetKey);
+        console.log("Validating property: "+this.targetKey);
         console.log(this.values);
         let targetValue = this.targetKey ? object[this.targetKey] : undefined;
         if(targetValue === undefined) targetValue = "default";
@@ -232,7 +231,10 @@ class SchemaEntry
         if(targetValue !== undefined) return ValidationResult.success();
         if(this.optional === "useDefault") {
             const defaultValue = this.default.getValue(targetObject);
-            if(defaultValue === undefined) return ValidationResult.failure(this.targetKey, "Property must be set!", targetValue);
+            if(defaultValue === undefined){
+                return ValidationResult.failure(this.targetKey, "Property must be set, no default found!", targetValue);
+            }
+            targetObject[this.targetKey] = defaultValue;
             return ValidationResult.success();
         }
         if(this.optional) return ValidationResult.success();
@@ -295,6 +297,7 @@ export class Schema
 
     assertValidate(targetObject) 
     {
+        console.log("Validationg object: ",targetObject);
         for(const key in this.dict)
         {
             const valueValidationResult = this.dict[key].validate(targetObject);
@@ -312,7 +315,8 @@ export class Schema
 export const SchemaKeys = {
     TEXTURE_PACK: "TEXTURE_PACK",
     MATERIAL: "MATERIAL",
-    MODEL: "MODEL"
+    MODEL: "MODEL",
+    NODE: "NODE"
 };
 /**
  * @type {Object.<string, Schema>}

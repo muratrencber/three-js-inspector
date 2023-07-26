@@ -1,0 +1,21 @@
+source:
+  validType: string
+modifiers:
+  validType: array[object]
+  default: []
+  optional: useDefault
+preConnect:
+  validType: array[object]
+  default: []
+  optional: useDefault
+connectionProperties:
+  validType: object
+  default: {}
+  optional: useDefault
+onNodeLoaded:
+  validType: string
+  optional: true
+rotationToApply:
+  validType: object
+  default: {x: 0, y: 0, z: 0}
+  optional: useDefault

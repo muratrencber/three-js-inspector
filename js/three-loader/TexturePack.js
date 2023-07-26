@@ -13,7 +13,7 @@ export class TexturePack
      * @param {string} key 
      * @param {THREE.Texture} texture 
      */
-    addTexture(key, texture)
+    setTexture(key, texture)
     {
         this.dict[key] = texture;
     }

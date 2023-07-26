@@ -3,10 +3,19 @@ yokohama:
   root: ./data/texture/cubemap/yokohama
   defaultExtension: jpg
   loadedAllCallback: yokohama/loadedAll
+studio:
+  type: hdri
+  root: ./data/texture/hdri
+  defaultExtension: hdr
+  sources: 
+    studio: studio
+    studio_lowres: studio_lowres
+  loadedAllCallback: envMap/loadedStudio
 coast_sand_rocks:
   type: texture
   root: ./data/texture/coast_sand_rocks
   defaultExtension: jpg
+  loadedAllCallback: metalStuds/loadedAll
   sources:
     - diffuse
     - displacement
@@ -28,7 +37,57 @@ mario:
     eye2_spe: eye2_spe
     eye2_normal: eye2_normal
     eye: eye
+metal_studs:
+  root: ./data/texture/metal_studs/
+  defaultExtension: png
+  loadedAllCallback: metalStuds/loadedAll
+  sources:
+    rough: rough
+    normal: normal
+    metalness: metalness
+    height: height
+    ao: ao
+    albedo: albedo
 common:
   root: ./data/texture
   sources:
     - error.webp
+herringbone:
+  root: ./data/texture/herringbone/
+  defaultExtension: jpg
+  loadedAllCallback: metalStuds/loadedAll
+  sources:
+    rough: rough
+    ao: ao
+    arm: arm
+    diffuse: diffuse
+    displacement: displacement
+    normal: normal
+wood_floor:
+  root: ./data/texture/wood_floor/
+  defaultExtension: jpg
+  loadedAllCallback: metalStuds/loadedAll
+  sources:
+    rough: rough
+    ao: ao
+    arm: arm
+    diffuse: diffuse
+    displacement: displacement
+    normal: normal
+stone_tiles:
+  root: ./data/texture/stone_tiles/
+  defaultExtension: jpg
+  loadedAllCallback: stoneTiles/loadedAll
+  sources:
+    rough: rough
+    ao: ao
+    arm: arm
+    diffuse: diffuse
+    displacement: displacement
+    normal: normal
+doji:
+  root: ./data/texture/doji/
+  sources:
+    roughness: roughness.png
+    emissive: emissive.jpeg
+    diffuse: diffuse.png

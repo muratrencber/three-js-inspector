@@ -3,6 +3,7 @@ import {SchemaKeys} from './ConfigSchema.js';
 import { TexturePack } from './TexturePack.js';
 import {normalizePath, getFileNameWithoutExtension} from './path.js';
 import * as THREE from 'three';
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 
 
 /**
@@ -32,20 +33,36 @@ export class TexturePackLoader extends ConfigLoader
     {
         const loader = this.getLoader();
         const root = this.getValue("root", null);
-        if(root) loader.setPath(normalizePath(root));
+        const normalizedRoot = root ? normalizePath(root) : null;
+        if(root) loader.setPath(normalizedRoot);
+        console.log(normalizePath(root));
         const sources = this.getValue("sources");
         const isDict = !Array.isArray(sources);
         const iteratorSource = isDict ? Object.keys(sources) : sources;
         let resultPack = new TexturePack();
         let index = 0;
+        const toEnvMap = this.getValue("convertToEnvMap", false);
         for(const iteratorElement of iteratorSource)
         {
             index++;
             const sourceArray = isDict ? sources[iteratorElement] : iteratorElement;
             const sanitizedSources = this.sanitizeSource(sourceArray);
+            console.log(sanitizedSources)
             const key = isDict ? iteratorElement : this.generateKeyFromSource(sourceArray, index);
-            const texture = await loader.loadAsync(sanitizedSources, (event) => this.invokeCallbackFunction("progressCallback", key, event));
-            resultPack.addTexture(key, texture)
+            console.log(key);
+            let texture = null;
+            try
+            {
+                texture = await loader.loadAsync(sanitizedSources, (event) => this.invokeCallbackFunction("progressCallback", key, event));
+            }
+            catch (e)
+            {
+                console.error("Error while loading texture "+normalizedRoot+sourceArray);
+                console.error(e);
+                continue;
+            }
+            if(toEnvMap) texture.mapping = THREE.EquirectangularReflectionMapping;
+            resultPack.setTexture(key, texture)
             this.invokeCallbackFunction("loadedOneCallback", key, texture, resultPack);
         }
         const globalProperties = this.getValue("globalProperties");
