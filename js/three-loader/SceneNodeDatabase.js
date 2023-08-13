@@ -2,17 +2,17 @@ import { DependencyType, register } from "./DependencyManager.js";
 import { ObjectDatabase } from "./ObjectDatabase.js";
 import { SceneNode } from "./SceneNode.js";
 import { SceneNodeLoader } from "./SceneNodeLoader.js";
-
-const CONFIGS_PATH = "./configs/scenenodestest.yaml";
-
 /**
  * @extends ObjectDatabase<SceneNode>
  */
-export class SceneNodeDatabase extends ObjectDatabase
-{
-    constructor()
+export class SceneNodeDatabase extends ObjectDatabase {
+    
+    /**
+     * @param {string} configsPath 
+     */
+    constructor(configsPath)
     {
-        super(CONFIGS_PATH, SceneNodeLoader);
+        super(configsPath, SceneNodeLoader);
     }
 
     registerForDependencies()
@@ -24,11 +24,14 @@ export class SceneNodeDatabase extends ObjectDatabase
      * @type {SceneNodeDatabase}
      */
     static instance;
-    static setup()
+    /**
+     * @param {string} configsPath 
+     */
+    static setup(configsPath)
     {
         if(!SceneNodeDatabase.instance)
         {
-            SceneNodeDatabase.instance = new SceneNodeDatabase();
+            SceneNodeDatabase.instance = new SceneNodeDatabase(configsPath);
             SceneNodeDatabase.instance.init();
         }
     }

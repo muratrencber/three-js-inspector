@@ -6,6 +6,7 @@ import { ObjectDatabase } from "./ObjectDatabase.js";
  * @extends ObjectDatabase<Object>
  */
 export class ModifierDatabase extends ObjectDatabase {
+    
     /**
      * @param {string} configsPath 
      */

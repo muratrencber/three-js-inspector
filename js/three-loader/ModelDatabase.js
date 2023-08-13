@@ -2,17 +2,17 @@ import { DependencyType, register } from "./DependencyManager.js";
 import { ModelLoader } from "./ModelLoader.js";
 import { ObjectDatabase } from "./ObjectDatabase.js";
 import * as THREE from 'three';
-
-const CONFIGS_PATH = "./configs/modelstest.yaml";
-
 /**
  * @extends ObjectDatabase<THREE.Group>
  */
-export class ModelDatabase extends ObjectDatabase
-{
-    constructor()
+export class ModelDatabase extends ObjectDatabase {
+    
+    /**
+     * @param {string} configsPath 
+     */
+    constructor(configsPath)
     {
-        super(CONFIGS_PATH, ModelLoader);
+        super(configsPath, ModelLoader);
     }
 
     registerForDependencies()
@@ -40,11 +40,14 @@ export class ModelDatabase extends ObjectDatabase
      * @type {ModelDatabase}
      */
     static instance;
-    static setup()
+    /**
+     * @param {string} configsPath 
+     */
+    static setup(configsPath)
     {
         if(!ModelDatabase.instance)
         {
-            ModelDatabase.instance = new ModelDatabase();
+            ModelDatabase.instance = new ModelDatabase(configsPath);
             ModelDatabase.instance.init();
         }
     }

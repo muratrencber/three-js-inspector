@@ -8,9 +8,9 @@ import { TextureDatabase } from "./TextureDatabase.js";
 
 export async function setup()
 {
-    TextureDatabase.setup();
-    MaterialDatabase.setup();
-    ModelDatabase.setup();
+    TextureDatabase.setup("./configs/texturetest.yaml");
+    MaterialDatabase.setup("./configs/materialtest.yaml");
+    ModelDatabase.setup("./configs/modelstest.yaml");
     ModifierDatabase.setup("./configs/modifierstest.yaml");
-    SceneNodeDatabase.setup();
+    SceneNodeDatabase.setup("./configs/scenenodestest.yaml");
 }

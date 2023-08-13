@@ -3,21 +3,18 @@ import { TexturePackLoader } from './TextureLoader.js';
 import { DependencyType, register } from './DependencyManager.js';
 import * as THREE from 'three';
 import { TexturePack } from './TexturePack.js';
-
-const CONFIGS_PATH = "./configs/texturetest.yaml";
-
 /**
  * @class
  * @extends ObjectDatabase<TexturePack>
  */
-export class TextureDatabase extends ObjectDatabase
-{
+export class TextureDatabase extends ObjectDatabase {
+    
     /**
-     * @private
+     * @param {string} configsPath 
      */
-    constructor()
+    constructor(configsPath)
     {
-        super(CONFIGS_PATH, TexturePackLoader);
+        super(configsPath, TexturePackLoader);
     }
 
     registerForDependencies()
@@ -30,12 +27,11 @@ export class TextureDatabase extends ObjectDatabase
      */
     static instance;
     /**
-     * @public
-     * @returns {TextureDatabase}
+     * @param {string} configsPath 
      */
-    static setup() {
+    static setup(configsPath) {
         if(TextureDatabase.instance === undefined) {
-            TextureDatabase.instance = new TextureDatabase();
+            TextureDatabase.instance = new TextureDatabase(configsPath);
             TextureDatabase.instance.init();
         }
     }
