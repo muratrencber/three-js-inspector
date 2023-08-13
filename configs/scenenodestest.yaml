@@ -4,7 +4,7 @@ test:
     - node: arrow
       plugKey: bottom
       receiverKey: r1
-  modifiers:
-    - test_mod
 arrow:
   source: ./data/scene/arrowscene.dae
+  modifiers:
+    - test_mod

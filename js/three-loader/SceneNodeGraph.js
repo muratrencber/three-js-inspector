@@ -157,9 +157,23 @@ export class SceneNodeGraph
      */
     findObject(path, startNodeKey = undefined)
     {
+        path = path.trim();
         let currentNode = startNodeKey ? this.nodes[startNodeKey] : null;
         let currentResult = null;
         const parts = path.split("/");
+        let isCurrentNode = true;
+        for(const part of parts)
+        {
+            if(!part)
+                continue;
+            isCurrentNode = false;
+            break;
+        }
+        if(isCurrentNode)
+        {
+            if(!currentNode) return null;
+            return currentNode;
+        }
         for(const part of parts)
         {
             let key = part;

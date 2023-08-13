@@ -1,5 +1,5 @@
 test_mod:
   type: material
   defaultInput: 0
-  targetPath: r1/arrow
+  targetPath: arrow
   materialOptions: [error, grass]
