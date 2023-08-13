@@ -6,7 +6,7 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DependencyDictionary, getMaterialProvider } from "./DependencyManager.js";
 import { getExtension, normalizePath } from "./path.js";
-import { applyMaterialArray, applyMaterialDict } from "./MaterialUtils.js";
+import { applyMaterialArray, applyMaterialDict, createMaterialMap } from "./MaterialUtils.js";
 
 
 /**

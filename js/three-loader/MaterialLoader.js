@@ -118,6 +118,7 @@ export class MaterialLoader extends ConfigLoader
                 result = new THREE.MeshStandardMaterial(properties);
                 break;
         }
+        result.name = this.config.configKey;
         this.invokeCallbackFunction("loadedCallback", result);
         return result;
     }

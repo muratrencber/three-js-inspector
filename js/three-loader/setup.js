@@ -4,6 +4,7 @@ import { ModelDatabase } from "./ModelDatabase.js";
 import { SceneNodeDatabase } from "./SceneNodeDatabase.js";
 import { TextureDatabase } from "./TextureDatabase.js";
 
+
 export async function setup()
 {
     TextureDatabase.setup();

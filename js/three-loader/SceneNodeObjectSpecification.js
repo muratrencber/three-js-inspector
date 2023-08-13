@@ -14,8 +14,8 @@ export const SceneNodeObjectTypes = {
     "primitive/plane": "primitive/plane",
     "primitive/sphere": "primitive/sphere",
     "light/point": "light/point",
-    "connection/plug": "connection/plug",
-    "connection/socket": "connection/socket"
+    "connection/receiver": "connection/receiver",
+    "connection/plug": "connection/plug"
 }
 
 /**
@@ -59,7 +59,7 @@ export class SceneNodeObjectSpecification
 
     /**
      * 
-     * @returns {THREE.Object3D|SceneNodeConnection}
+     * @returns {THREE.Object3D}
      */
     getObject()
     {
@@ -89,7 +89,7 @@ export class SceneNodeObjectSpecification
                 return ModelDatabase.instance.resetRotation(this.key);
             case "primitive":
                 const primitiveType = typeChain[1];
-                const material = new THREE.MeshBasicMaterial({color: 0xff0000});
+                const material = new THREE.MeshBasicMaterial({color: 0xff0000, name:"default"});
                 let geometry = undefined;
                 switch(primitiveType)
                 {

@@ -125,17 +125,23 @@ class ModelProvider extends DependencyProvider {}
 class NodeProvider extends DependencyProvider {}
 
 /**
- * @type {{texturePacks: TexturePackProvider, materials: MaterialProvider, models: ModelProvider, nodes: NodeProvider}}
+ * @typedef {import("./SceneUI.js").SceneUI} UIManager
+ */
+
+/**
+ * @typedef {{texturePacks: TexturePackProvider, materials: MaterialProvider, models: ModelProvider, nodes: NodeProvider, uiManager: UIManager}} Provider
+ * @type {Provider}
  */
 const PROVIDERS = {
     "texturePacks": null,
     "materials": null,
     "models": null,
-    "nodes": null
+    "nodes": null,
+    "uiManager": null,
 }
 
 /**
- * @param {DependencyTypeValues} key
+ * @param {keyof typeof PROVIDERS} key
  * @param {TexturePackProvider|MaterialProvider|ModelProvider|NodeProvider} provider 
  */
 export function register(key, provider)
@@ -185,4 +191,12 @@ export function getModelProvider()
 export function getNodeProvider()
 {
     return PROVIDERS.nodes;
+}
+
+/**
+ * @returns {UIManager | null}
+ */
+export function getUIManager()
+{
+    return PROVIDERS.uiManager;
 }

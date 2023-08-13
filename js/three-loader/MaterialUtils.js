@@ -1,81 +1,98 @@
-
 class MaterialMap
-{
+{   
     /**
      * 
-     * @param {THREE.Material} defaultMaterial 
+     * @param {boolean} skipIfExists 
      */
-    constructor(defaultMaterial)
+    constructor(skipIfExists)
     {
         /**
-         * @type {Array<{original: THREE.Material, new: THREE.Material | undefined}>}
+         * @type {Map<string, THREE.Material>}
          */
-        this.map = [];
+        this.map = new Map();
+        /**
+         * @type {boolean}
+         */
+        this.skipIfExists = skipIfExists;
+        /**
+         * @type {Array<string>}
+         */
+        this.keys = [];
         /**
          * @type {THREE.Material}
          */
-        this.defaultMaterial = defaultMaterial;
+        this.defaultMaterial = undefined;
     }
 
     /**
      * 
      * @param {THREE.Material} material 
-     * @returns {boolean}
      */
-    hasMaterial(material)
+    add(material)
     {
-        if(this.getNewMaterial(material)) return true;
-        return false;
+        if(!material)
+        {
+            console.warn("MaterialMap: Material is null or undefined!", material);
+            return;
+        }
+        if(!material.name)
+        {
+            console.warn("MaterialMap: Material name not found!", material);
+            return;
+        }
+        const key = material.referencedName ?? material.name;
+        if(this.skipIfExists && this.map.has(key))
+        {
+            return;
+        }
+        const willAddToKeys = !this.map.has(key);
+        this.map.set(key, material);
+        if(willAddToKeys)
+        {
+            this.keys.push(key);
+        }
+    }
+
+    /**
+     * @param {number} index
+     * @param {THREE.Material} material  
+     */
+    setNewMaterialFromIndex(index, material)
+    {
+        if(index < 0 || index >= this.keys.length)
+            return;
+        const key = this.keys[index];
+        this.setNewMaterial(key, material);
+    }
+
+    /**
+     * @param {string} key
+     * @param {THREE.Material} material  
+     */
+    setNewMaterial(key, material)
+    {
+        this.map.set(key, material);
     }
 
     /**
      * 
-     * @param {THREE.Material} material 
-     * @returns {{{original: THREE.Material, new: THREE.Material | undefined}}}
+     * @param {THREE.Material} material
+     * @returns {THREE.Material} 
      */
-    getMapFor(material)
+    getNewOf(material)
     {
-        return this.map.find(entry => entry.original === material);
-    }
-
-    /**
-     * 
-     * @param {THREE.Material} material 
-     * @returns 
-     */
-    setMapFor(material)
-    {
-        if(this.hasMaterial(material)) return;
-        this.map.push({
-            original: material,
-            new: this.defaultMaterial
-        });
-    }
-
-    /**
-     * 
-     * @param {THREE.Material} material 
-     * @param {number} index 
-     * @returns 
-     */
-    setNewMaterialFromIndex(material, index)
-    {
-        if(index < 0 || index >= this.map.length) return;
-        this.map[index].new = material;
-    }
-
-    /**
-     * 
-     * @param {THREE.Material} material 
-     * @returns {THREE.Material}
-     */
-    getNewMaterial(material)
-    {
-        const map = this.getMapFor(material);
-        if(map) return map.new;
-        return undefined;
+        if(!material || (!material.referencedName && !material.name))
+            return null;
+        const key = material.referencedName ?? material.name;
+        const selectedMaterial = this.map.get(key) ?? this.defaultMaterial;
+        if(!selectedMaterial)
+            return null;
+        let newMaterial = selectedMaterial.clone();
+        newMaterial.referencedName = key;
+        return newMaterial;
     }
 }
+
 
 /**
  * 
@@ -88,7 +105,7 @@ export function applyMaterialArray(group, materials, defaultMaterial = undefined
     const materialMap = createMaterialMap(group, defaultMaterial);
     for(let i = 0; i < materials.length; i++)
     {
-        materialMap.setNewMaterialFromIndex(materials[i], i);
+        materialMap.setNewMaterialFromIndex(i, materials[i]);
     }
     setFromMaterialMap(group, materialMap, defaultMaterial);
 }
@@ -102,48 +119,68 @@ export function applyMaterialArray(group, materials, defaultMaterial = undefined
 export function applyMaterialDict(group, materialDict, defaultMaterial = undefined)
 {
     const materialMap = createMaterialMap(group, defaultMaterial);
-    for(const orgMaterial in materialDict)
+    for(const orgMaterialKey in materialDict)
     {
-        const singleMap = materialMap.map.filter(map => map.original.name == orgMaterial);
-        if(!singleMap || singleMap.length == 0) continue;
-        singleMap.forEach(map => map.new = materialDict[orgMaterial]);
+        const newMaterial = materialDict[orgMaterialKey];
+        materialMap.setNewMaterial(orgMaterialKey, newMaterial);
     }
     setFromMaterialMap(group, materialMap, defaultMaterial);
 }
 
 /**
  * 
- * @param {THREE.Group} group 
- * @param {THREE.Material} defaultMaterial 
- * @returns {MaterialMap}
+ * @param {THREE.Group} group
+ * @returns {MaterialMap>}
  */
-function createMaterialMap(group, defaultMaterial)
+export function createMaterialMap(group)
 {
-    const map = new MaterialMap(defaultMaterial);
+    let result = new MaterialMap();
     group.traverse((obj) => {
         if(!obj.isMesh) return;
         /**
          * @type {THREE.Material}
          */
         const material = obj.material;
-        map.setMapFor(obj.material);
+        if(Array.isArray(material))
+        {
+            for(const mat of material)
+            {
+                result.add(mat);
+            }
+        }
+        else
+        {
+            result.add(material);
+        }
     });
-    return map;
+    return result;
 }
 
 /**
  * 
  * @param {THREE.Group} group 
- * @param {MaterialMap} materialMap 
- * @param {THREE.Material} defaultMaterial 
+ * @param {MaterialMap} materialMap
  */
-function setFromMaterialMap(group, materialMap, defaultMaterial = undefined)
+function setFromMaterialMap(group, materialMap)
 {
     group.traverse((obj) => {
         if(!obj.isMesh) return;
-        let selectedMaterial = materialMap.getNewMaterial(obj.material);
-        if(!selectedMaterial) selectedMaterial = defaultMaterial;
-        if(!selectedMaterial) return;
-        obj.material = selectedMaterial;
+        if(Array.isArray(obj.material))
+        {
+            let materials = obj.material;
+            for(let i = 0; i < materials.length; i++)
+            {
+                const mat = materials[i];
+                const newMat = materialMap.getNewOf(mat);
+                if(!newMat) continue;
+                materials[i] = newMat;
+            }
+        }
+        else
+        {
+            const newMat = materialMap.getNewOf(obj.material);
+            if(!newMat) return;
+            obj.material = newMat;
+        }
     })
 }

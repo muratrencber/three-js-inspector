@@ -1,2 +1,13 @@
-scene01:
-  source: ./data/scene/marioscene.dae
+test:
+  source: ./data/scene/testscene.dae
+  preConnects:
+    - node: arrow
+      plugKey: bottom
+      receiverKey: r1
+  modifiers:
+    - type: material
+      defaultInput: 0
+      targetPath: r1/arrow
+      materialOptions: [error, grass]
+arrow:
+  source: ./data/scene/arrowscene.dae

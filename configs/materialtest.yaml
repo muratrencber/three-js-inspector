@@ -16,7 +16,7 @@ grass:
     displacementMap: displacement
     aoMap: ao
     roughnessMap: roughness
-    displacementScale: 0.02
+    displacementScale: 0.0
     normalMap: normal
     roughness: 0.5
     metalness: 0.5
@@ -109,3 +109,7 @@ doji_diamond:
     emissive: 0x0f00ff
     roughness: 0
     metalness: 1
+arrow:
+  type: basic
+  properties:
+    color: 0xff0000

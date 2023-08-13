@@ -186,13 +186,9 @@ class SchemaEntry
          */
         this.valueTypes = parseSchemaEntryValue(serializedValue.valueTypes);
         /**
-         * @type {boolean|string}
+         * @type {SchemaEntryValue}
          */
-        this.optional = serializedValue.optional;
-        /**
-         * @type {boolean}
-         */
-        this.setDefault = serializedValue.setDefault;
+        this.optional = parseSchemaEntryValue(serializedValue.optional);
     }
 
     getDefaultValue(targetObject)
@@ -228,8 +224,9 @@ class SchemaEntry
     validateUndefined(targetObject)
     {
         const targetValue = targetObject[this.targetKey];
+        const optionality = this.optional?.getValue(targetObject) ?? false;
         if(targetValue !== undefined) return ValidationResult.success();
-        if(this.optional === "useDefault") {
+        if(optionality === "useDefault") {
             const defaultValue = this.default.getValue(targetObject);
             if(defaultValue === undefined){
                 return ValidationResult.failure(this.targetKey, "Property must be set, no default found!", targetValue);
@@ -237,7 +234,7 @@ class SchemaEntry
             targetObject[this.targetKey] = defaultValue;
             return ValidationResult.success();
         }
-        if(this.optional) return ValidationResult.success();
+        if(optionality) return ValidationResult.success();
         return ValidationResult.failure(this.targetKey, "Property must be set!");
     }
 
@@ -288,20 +285,50 @@ export class Schema
          * @private
          */
         this.dict = {};
+        /**
+         * @type {Object.<string, Schema>}
+         */
+        this.subSchemas = {};
+        /**
+         * @type {"array"|"dict"|undefined}
+         */
+        this.iterates = false;
         for(const key in schemaObject)
         {
+            const entry = schemaObject[key];
+            if(entry.refers !== undefined)
+            {
+                const schemaKey = entry.refers;
+                this.subSchemas[key] = GetSchema(schemaKey);
+                this.subSchemas[key].iterates = entry.iterates;
+            }
             const schemaValue = new SchemaEntry(key, schemaObject[key]);
             this.dict[key] = schemaValue;
         }
     }
 
-    assertValidate(targetObject) 
+    assertValidate(targetObject, skipIteration = false) 
     {
+        if(this.iterates && !skipIteration)
+        {
+            let resultValues = targetObject;
+            if(this.iterates === "dict") resultValues = Object.values(targetObject);
+            for(const targetChild of resultValues)
+                this.assertValidate(targetChild, true);
+            return;
+        }
         console.log("Validationg object: ",targetObject);
         for(const key in this.dict)
         {
             const valueValidationResult = this.dict[key].validate(targetObject);
             valueValidationResult.assert();
+        }
+        for(const key in this.subSchemas)
+        {
+            const subSchema = this.subSchemas[key];
+            let targetSubObject = targetObject[key];
+            if(!targetSubObject) continue;
+            subSchema.assertValidate(targetSubObject);
         }
     }
 
@@ -316,7 +343,9 @@ export const SchemaKeys = {
     TEXTURE_PACK: "TEXTURE_PACK",
     MATERIAL: "MATERIAL",
     MODEL: "MODEL",
-    NODE: "NODE"
+    NODE: "NODE",
+    CONNECTION_PROPERTIES: "CONNECTION_PROPERTIES",
+    PRE_CONNECT: "PRE_CONNECT"
 };
 /**
  * @type {Object.<string, Schema>}

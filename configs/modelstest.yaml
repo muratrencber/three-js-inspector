@@ -18,3 +18,11 @@ ring2:
     material_0: ring
     White_Gold: ring
     White_Gold_2: ring
+arrow:
+  source: ./data/model/arrow.fbx
+  material: arrow
+  rotateLocal: true
+  rotateY: 180
+  rotateX: 90
+thecube:
+  source: ./data/model/thecube.fbx

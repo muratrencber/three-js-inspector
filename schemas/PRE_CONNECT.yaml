@@ -1,0 +1,6 @@
+node:
+  validType: string
+plugKey:
+  validType: string
+receiverKey:
+  validType: string

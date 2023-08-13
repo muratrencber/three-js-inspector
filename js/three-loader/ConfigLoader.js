@@ -1,6 +1,7 @@
 import { invokeCallback } from './CallbackManager.js';
 import {Schema, SchemaKeys, GetSchema} from './ConfigSchema.js';
 import { DependencyDictionary, DependencyType } from './DependencyManager.js';
+import { SceneNode } from './SceneNode.js';
 import { TexturePack } from './TexturePack.js';
 import * as THREE from 'three';
 
@@ -39,11 +40,36 @@ export class ConfigLoader
 
     getValue(key, defaultValue = undefined)
     {
+        let value = this.getValueWithSchema(this.config, key, this.schema, undefined);
+        if(!value) return defaultValue;
+        const subSchema = this.schema?.subSchemas[key];
+        if(subSchema)
+        {
+            const valuesToEvaluate = !subSchema.iterates ? [value] : subSchema.iterates === "dict" ? Object.values(value) : value;
+            for(const val of valuesToEvaluate)
+            {
+                for(const valKey in val)
+                    val[valKey] ??= this.getValueWithSchema(val, valKey, subSchema);
+            }
+        }
+        return value;
+    }
+
+    /**
+     * @private
+     * @param {Object} object 
+     * @param {string} key 
+     * @param {Schema} schema 
+     * @param {any} defaultValue 
+     * @returns 
+     */
+    getValueWithSchema(object, key, schema, defaultValue = undefined)
+    {
         let value = defaultValue;
-        if(this.config && this.config[key])
-            value = this.config[key];
+        if(object && object[key])
+            value = object[key];
         else
-            value ??= this.schema.tryGetValue(this.config, key);
+            value ??= schema?.tryGetValue(object, key);
         return value;
     }
 
@@ -109,6 +135,17 @@ export class ConfigLoader
     {
         if(!this.dependencies) return null;
         return this.dependencies.getObject(DependencyType.materials, key);
+    }
+
+    /**
+     * 
+     * @param {string} key 
+     * @returns {SceneNode}
+     */
+    getNode(key)
+    {
+        if(!this.dependencies) return null;
+        return this.dependencies.getObject(DependencyType.nodes, key);
     }
 
     /**

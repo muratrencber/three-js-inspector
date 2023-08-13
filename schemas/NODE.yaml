@@ -4,18 +4,16 @@ modifiers:
   validType: array[object]
   default: []
   optional: useDefault
-preConnect:
-  validType: array[object]
+preConnects:
+  refers: PRE_CONNECT
+  iterates: array
   default: []
   optional: useDefault
 connectionProperties:
-  validType: object
+  refers: CONNECTION_PROPERTIES
+  iterates: dict
   default: {}
   optional: useDefault
 onNodeLoaded:
   validType: string
   optional: true
-rotationToApply:
-  validType: object
-  default: {x: 0, y: 0, z: 0}
-  optional: useDefault

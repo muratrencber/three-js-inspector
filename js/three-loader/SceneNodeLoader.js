@@ -2,6 +2,7 @@ import { ConfigLoader } from "./ConfigLoader.js";
 import { SchemaKeys } from "./ConfigSchema.js";
 import { DependencyDictionary } from "./DependencyManager.js";
 import { SceneNode } from "./SceneNode.js";
+import { SceneNodeConnection } from "./SceneNodeConnection.js";
 import { SceneNodeSource } from "./SceneNodeSource.js";
 import * as THREE from 'three';
 
@@ -54,10 +55,7 @@ export class SceneNodeLoader extends ConfigLoader
     async load()
     {
         this.tryLoadSource(true);
-        let result = new SceneNode();
-        const rot = this.getValue("rotationToApply");
-        const deg2Rad = Math.PI / 180;
-        const rotationToApply = new THREE.Euler(rot.x * deg2Rad, rot.y * deg2Rad, rot.z * deg2Rad);
+        let result = new SceneNode(this.config.configKey);
         const specs = this.source.tryLoadSpecifications(true).sceneNodeObjects;
         for(const key in specs)
         {
@@ -72,7 +70,8 @@ export class SceneNodeLoader extends ConfigLoader
                 result.addObject(key, nodeObject);
             }
         }
-        //result.root.rotateX(-90 / 180 * Math.PI);
+        result.preConnects = this.getValue("preConnects", []);
+        this.getValue("modifiers", []).forEach((val, _) => result.addModifier(val));
         this.invokeCallbackFunction("onNodeLoaded", result);
         return Promise.resolve(result);
     }
@@ -85,12 +84,11 @@ export class SceneNodeLoader extends ConfigLoader
     getConnectionProperties(connectionKey)
     {
         const props = this.getValue("connectionProperties", {});
-        if(!props[connectionKey]) return {};
-        return props[connectionKey];
+        return props[connectionKey] ?? {};
     }
 
     /**
-     * @typedef {{node: string, connectionKey: string}} connectionType
+     * @typedef {{node: string, plugKey: string, receiverKey: string}} connectionType
      * @returns {Array<string>}
      */
     getConnectionNodeReferences()
@@ -98,12 +96,11 @@ export class SceneNodeLoader extends ConfigLoader
         /**
          * @type {Array<connectionType>}
          */
-        const connections = this.getValue("preConnect", []);
+        const connections = this.getValue("preConnects", []);
         let resultSet = new Set();
         for(const connection of connections)
             resultSet.add(connection.node);
         return Array.from(resultSet);
     }
-
     
 }

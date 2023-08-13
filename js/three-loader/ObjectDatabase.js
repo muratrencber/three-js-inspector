@@ -62,7 +62,10 @@ export class ObjectDatabase
     init()
     {
         this.configMap = this.getConfigs();
-        console.log(this.configMap);
+        for(const key in this.configMap)
+        {
+            this.configMap[key].configKey = key;
+        }
     }
 
     /**
@@ -76,13 +79,13 @@ export class ObjectDatabase
     }
 
     /**
-     * 
      * @param {string} key 
-     * @param {ObjectType} object 
+     * @param {ObjectType} object
+     * @param {boolean} [replace=false] 
      */
-    addLoadedObject(key, object)
+    addLoadedObject(key, object, replace = false)
     {
-        if(this.loadedConfigMap[key]) return;
+        if(this.loadedConfigMap[key] && !replace) return;
         this.loadedConfigMap[key] = object;
     }
 
@@ -119,6 +122,7 @@ export class ObjectDatabase
         console.log(this.loaderConstructor.name, "Checking for key:",key);
         if(!this.configMap) return undefined;
         if(loadedOnly && !this.loadedConfigMap[key]) return undefined;
+        if(!this.configMap[key]) return undefined;
         return {...this.configMap[key]};
     }
 
@@ -159,7 +163,7 @@ export class ObjectDatabase
     {
         if(this.isConfigLoaded(key)) return Promise.resolve(this.getLoadedConfig(key));
         if(this.isConfigLoading(key)) return this.currentlyLoading[key];
-        const promise = this.loadInternal(key, checkDependencies);
+        const promise = this.loadInternal(key, checkDependencies).catch(() => {});
         this.currentlyLoading[key] = promise;
         const result = await promise;
         delete this.currentlyLoading[key];

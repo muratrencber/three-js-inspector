@@ -1,9 +1,10 @@
+import * as THREE from 'three';
 /**
  * @global
- * @typedef {"plug"|"socket"} connectionType
+ * @typedef {"plug"|"receiver"} connectionType
  * @typedef {{hideOnConnect: boolean}} connectionProperties
  */
-export class SceneNodeConnection
+export class SceneNodeConnection extends THREE.Group
 {
     /**
      * 
@@ -12,16 +13,23 @@ export class SceneNodeConnection
      */
     constructor(type, group)
     {
+        super();
         /**
          * @type {connectionType}
          */
-        this.type = type;
+        this.connectionType = type;
+        this.isConnection = true;
+        this.hideOnConnect = false;
         /**
          * @type {THREE.Group}
          */
         this.group = group;
-        this.isConnection = true;
-        this.hideOnConnect = false;
+        if(type === "receiver") this.group.add(new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.5, 0.1), new THREE.MeshBasicMaterial({color: 0xff0000})));
+        if(type === "plug") this.group.add(new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.4, 0.15), new THREE.MeshBasicMaterial({color: 0x0000ff})));
+        /**
+         * @type {SceneNode}
+         */
+        this.ownerNode = null;
     }
 
     /**
