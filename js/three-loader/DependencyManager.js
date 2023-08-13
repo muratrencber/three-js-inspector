@@ -1,22 +1,38 @@
 import { SceneNode } from "./SceneNode.js";
 import { TexturePack } from "./TexturePack.js";
 
+const DEPENDENCY_TYPE_VALUES = {
+    "texturePacks": 0,
+    "materials": 0,
+    "models": 0,
+    "nodes": 0,
+    "modifiers": 0
+}
 /**
- * @typedef {"texturePacks"|"materials"|"models"|"nodes"} DependencyTypeValues
+ * @typedef {keyof typeof DEPENDENCY_TYPE_VALUES} DependencyTypeValues
  * @global
  */
+
 export const DependencyType = {
     texturePacks: "texturePacks",
     materials: "materials",
     models: "models",
-    nodes: "nodes"
+    nodes: "nodes",
+    modifiers: "modifiers"
 } 
 
 export class DependencyDictionary
 {
     /**
-     * 
-     * @typedef {{texturePacks: Array<string>,materials: Array<string>,models: Array<string>, nodes: Array<string>}} DependencyDictionaryType
+     * @typedef DependencyDictionaryType
+     * @property {Array<string>} texturePacks
+     * @property {Array<string>} materials
+     * @property {Array<string>} models
+     * @property {Array<string>} nodes
+     * @property {Array<string>} modifiers
+     */
+
+    /**
      * @param {DependencyDictionaryType} typesAndKeys 
      */
     constructor(typesAndKeys = {})
@@ -29,7 +45,8 @@ export class DependencyDictionary
             texturePacks: {},
             materials: {},
             models: {},
-            nodes: {}
+            nodes: {},
+            modifiers: {}
         };
         for(const texturePackKey of (typesAndKeys.texturePacks ?? []))
             this.dict.texturePacks[texturePackKey] = undefined;
@@ -39,6 +56,8 @@ export class DependencyDictionary
             this.dict.models[modelKey] = undefined;
         for(const nodeKey of (typesAndKeys.nodes ?? []))
             this.dict.nodes[nodeKey] = undefined;
+        for(const modifierKey of (typesAndKeys.modifiers ?? []))
+            this.dict.modifiers[modifierKey] = undefined;
     }
 
     async loadAll()
@@ -125,11 +144,25 @@ class ModelProvider extends DependencyProvider {}
 class NodeProvider extends DependencyProvider {}
 
 /**
+ * @extends DependencyProvider<Object>
+ */
+class ModifierProvider extends DependencyProvider {}
+
+/**
  * @typedef {import("./SceneUI.js").SceneUI} UIManager
  */
 
 /**
- * @typedef {{texturePacks: TexturePackProvider, materials: MaterialProvider, models: ModelProvider, nodes: NodeProvider, uiManager: UIManager}} Provider
+ * @typedef Provider
+ * @property {TexturePackProvider} texturePacks
+ * @property {MaterialProvider} materials
+ * @property {ModelProvider} models
+ * @property {NodeProvider} nodes
+ * @property {UIManager} uiManager
+ * @property {ModifierProvider} modifiers
+ */
+
+/**
  * @type {Provider}
  */
 const PROVIDERS = {
@@ -138,6 +171,7 @@ const PROVIDERS = {
     "models": null,
     "nodes": null,
     "uiManager": null,
+    "modifiers": null
 }
 
 /**
@@ -199,4 +233,13 @@ export function getNodeProvider()
 export function getUIManager()
 {
     return PROVIDERS.uiManager;
+}
+
+/**
+ * 
+ * @returns {ModifierProvider | null}
+ */
+export function getModifierProvider()
+{
+    return PROVIDERS.modifiers;
 }

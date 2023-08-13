@@ -1,0 +1,21 @@
+type:
+  values: [material]
+  validType: string
+targetPath:
+  validType: string
+lazyLoad:
+  validType: boolean
+  default: true
+  optional: useDefault
+defaultInput:
+  validType:
+    target: type
+    values:
+      material: number
+  optional: false
+materialOptions:
+  validType: array[string]
+  optional:
+    target: type
+    values:
+      material: true

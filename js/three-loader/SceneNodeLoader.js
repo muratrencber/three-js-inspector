@@ -2,9 +2,7 @@ import { ConfigLoader } from "./ConfigLoader.js";
 import { SchemaKeys } from "./ConfigSchema.js";
 import { DependencyDictionary } from "./DependencyManager.js";
 import { SceneNode } from "./SceneNode.js";
-import { SceneNodeConnection } from "./SceneNodeConnection.js";
 import { SceneNodeSource } from "./SceneNodeSource.js";
-import * as THREE from 'three';
 
 /**
  * @extends ConfigLoader<SceneNode>
@@ -40,11 +38,13 @@ export class SceneNodeLoader extends ConfigLoader
         const materials = Object.values(this.source.getMaterialDict());
         const models = this.source.getModelKeys();
         const nodes = this.getConnectionNodeReferences();
+        const modifiers = this.getValue("modifiers", []);
         return new DependencyDictionary(
             {
                 materials: materials,
                 models: models,
-                nodes: nodes
+                nodes: nodes,
+                modifiers: modifiers
             }
         );
     }
@@ -71,7 +71,8 @@ export class SceneNodeLoader extends ConfigLoader
             }
         }
         result.preConnects = this.getValue("preConnects", []);
-        this.getValue("modifiers", []).forEach((val, _) => result.addModifier(val));
+        this.getValue("modifiers", []).forEach((val, _) => result.addModifier(this.getModifier(val)));
+        this.getValue("localModifiers", []).forEach((val, _) => result.addModifier(val));
         this.invokeCallbackFunction("onNodeLoaded", result);
         return Promise.resolve(result);
     }

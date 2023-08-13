@@ -345,7 +345,8 @@ export const SchemaKeys = {
     MODEL: "MODEL",
     NODE: "NODE",
     CONNECTION_PROPERTIES: "CONNECTION_PROPERTIES",
-    PRE_CONNECT: "PRE_CONNECT"
+    PRE_CONNECT: "PRE_CONNECT",
+    MODIFIER: "MODIFIER"
 };
 /**
  * @type {Object.<string, Schema>}

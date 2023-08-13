@@ -5,9 +5,6 @@ test:
       plugKey: bottom
       receiverKey: r1
   modifiers:
-    - type: material
-      defaultInput: 0
-      targetPath: r1/arrow
-      materialOptions: [error, grass]
+    - test_mod
 arrow:
   source: ./data/scene/arrowscene.dae

@@ -149,6 +149,17 @@ export class ConfigLoader
     }
 
     /**
+     * 
+     * @param {string} key 
+     * @returns {Object}
+     */
+    getModifier(key)
+    {
+        if(!this.dependencies) return null;
+        return this.dependencies.getObject(DependencyType.modifiers, key);
+    }
+
+    /**
      * @returns {Promise<ConfigType>}
      */
     async load() { throw new Error("Cannot load with abstract base class ConfigLoader!"); }

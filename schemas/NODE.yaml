@@ -17,3 +17,12 @@ connectionProperties:
 onNodeLoaded:
   validType: string
   optional: true
+localModifiers:
+  refers: MODIFIER
+  iterates: array
+  default: []
+  optional: useDefault
+modifiers:
+  validType: array[string]
+  default: []
+  optional: useDefault
