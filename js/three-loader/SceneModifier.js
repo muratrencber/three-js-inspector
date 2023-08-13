@@ -8,12 +8,6 @@ import { SceneNodeConnection } from "./SceneNodeConnection.js";
  */
 
 /**
- * @template modifierType
- * @typedef SceneModifierUIEventData
- * @property {SceneModifierUI<modifierType>} modifierUI
- */
-
-/**
  * @template inputType
  * @typedef SceneModifierEventData
  * @property {SceneModifier<inputType>} modifier
@@ -54,29 +48,15 @@ import { SceneNodeConnection } from "./SceneNodeConnection.js";
  */
 
 /**
- * @private
- * @template modifierType
- * @typedef SceneModifierUICallbacksBase
- * @property {SceneModifierUIEventData<modifierType>} refreshedElement
- * @property {SceneModifierUIEventData<modifierType>} createdElement
- */
-
-/**
  * @template inputType
  * @typedef {SceneModifierCallbacksBase<inputType>} SceneModifierCallbacks
-
-/**
- * @template inputType
- * @template modifierType
- * @typedef {SceneModifierCallbacksBase<inputType> & SceneModifierUICallbacksBase<modifierType>} SceneModifierUICallbacks
- */
 
 
 /**
  * @template inputType
  * @type {SceneModifierCallbacks<inputType>}
  */
-const CALLBACKS = {
+export const CALLBACKS = {
     "appliedInput": 0,
     "initializeFinished": 0,
     "initializeStarted": 0,
@@ -85,17 +65,6 @@ const CALLBACKS = {
     "prepareFinished": 0,
     "prepareStarted": 0
 } 
-
-/**
- * @template inputType
- * @template modifierType
- * @type {SceneModifierUICallbacks<inputType, modifierType>}
- */
-const UI_CALLBACKS = {
-    ...CALLBACKS,
-    "createdElement": 0,
-    "refreshedElement": 0
-};
 
 /**
  * @template inputType
@@ -219,58 +188,4 @@ export class SceneModifier
         this.target = this.graph.findObject(this.targetPath, nodeKey);
         return this.target;
     }
-}
-
-/**
- * @template {SceneModifier} ModifierType
- */
-export class SceneModifierUI
-{
-    /**
-     * @param {ModifierType} modifier 
-     */
-    constructor(modifier)
-    {
-        /**
-         * @type {ModifierType}
-         */
-        this.modifier = modifier;
-        /**
-         * @type {Element}
-         */
-        this.element = null;
-        /**
-         * @type {CallbackList<SceneModifierUICallbacks<ModifierType.inputType, ModifierType>>}
-         */
-        this.callbacks = new CallbackList(UI_CALLBACKS, modifier.callbacks);
-    }
-
-    refreshElement()
-    {
-        this.refreshElementInternal();
-        this.callbacks.invoke("refreshedElement", {modifierUI: this});
-    }
-
-    /**
-     * @returns {Element}
-     */
-    createElement()
-    {
-        let result = this.createElementInternal();
-        this.callbacks.invoke("createdElement", {modifierUI: this});
-        return result;
-    }
-
-    /**
-     * @protected
-     * @abstract
-     */
-    refreshElementInternal() { }
-
-    /**
-     * @protected
-     * @abstract
-     * @returns {Element}
-     */
-    createElementInternal() { }
 }

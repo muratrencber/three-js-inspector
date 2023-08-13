@@ -1,12 +1,12 @@
 import { CallbackList } from "./CallbackList.js";
+import { DOMConnection } from "./DOMConnection.js";
 import { register } from "./DependencyManager.js";
-import { SceneModifier, SceneModifierUI } from "./SceneModifier.js";
-import { parseModifierObject } from "./SceneModifierParser.js";
+import { SceneModifier } from "./SceneModifier.js";
+import { SceneModifierUI } from "./SceneModifierUI.js";
 import { getYAMLObject } from "./request.js";
 
 const MATERIAL_MAP_PATH = "./configs/mmaptest.yaml";
 const DEFAULT_MATERIAL_KEY = "default";
-
 /**
  * @typedef ModifierEventData
  * @property {SceneUI} ui
@@ -30,9 +30,7 @@ const CALLBACKS = {
 /**
  * @typedef SceneUIConfig
  * @property {NodeGraph} graph
- * @property {Element} modifierRoot
- * @property {Element} threeCanvas
- * @property {Element} loadingScreen 
+ * @property {DOMConnection} DOMConnection
  */
 
 /**
@@ -63,17 +61,9 @@ export class SceneUI {
          */
         this.graph = config.graph;
         /**
-         * @type {Element}
+         * @type {DOMConnection}
          */
-        this.modifierRoot = config.modifierRoot;
-        /**
-         * @type {Element}
-         */
-        this.threeCanvas = config.threeCanvas;
-        /**
-         * @type {Element}
-         */
-        this.loadingScreen = config.loadingScreen;
+        this.DOMConnection = config.DOMConnection;
         /**
          * @type {CallbackList<SceneUICallbacks>}
          */
@@ -91,15 +81,8 @@ export class SceneUI {
      */
     setLoading(isLoading)
     {
-        const disabledClassName = "disabled";
-        if(!isLoading) {
-            this.threeCanvas.classList.remove(disabledClassName);
-            this.loadingScreen.classList.add(disabledClassName);
-        }
-        else {
-            this.threeCanvas.classList.add(disabledClassName);
-            this.loadingScreen.classList.remove(disabledClassName);
-        }
+        this.DOMConnection.setTHREEContainerVisibility(!isLoading);
+        this.DOMConnection.setLoadingPanelVisibility(isLoading);
     }
 
     redraw()
@@ -120,7 +103,7 @@ export class SceneUI {
     {
         for(const mod of event.node.modifiers)
         {
-            const uiObject = parseModifierObject(mod);
+            const uiObject = this.DOMConnection.getModifierUIObjectFor(mod);
             if(!uiObject) continue;
             uiObject.modifier.ownerNode = event.node;
             this.addModifierUI(uiObject);
@@ -143,7 +126,7 @@ export class SceneUI {
     {
         this.modifierUIs.push(modifierUI);
         modifierUI.callbacks.addListener("appliedInput", () => this.redraw());
-        this.addModifierUIElement(modifierUI);
+        this.initModifierUIElement(modifierUI);
         this.initModifier(modifierUI);
         this.callbacks.invoke("modifierAdded", {
             "modifierUI": modifierUI,
@@ -192,10 +175,9 @@ export class SceneUI {
     /**
      * @param {SceneModifierUI} uiObject 
      */
-    addModifierUIElement(uiObject)
+    initModifierUIElement(uiObject)
     {
-        const element = uiObject.createElement();
-        this.modifierRoot.appendChild(element);
+        uiObject.establishElementConnection();
     }
 
     /**
@@ -203,7 +185,7 @@ export class SceneUI {
      */
     removeModifierUIElement(uiObject)
     {
-        this.modifierRoot.removeChild(uiObject.element);
+        uiObject.removeElementConnection();
     }
 
     /**

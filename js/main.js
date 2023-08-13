@@ -13,14 +13,14 @@ import { SceneNodeConnection } from './three-loader/SceneNodeConnection.js';
 import { SceneNodeGraph } from './three-loader/SceneNodeGraph.js';
 import { SceneUI } from './three-loader/SceneUI.js';
 import { createMaterialMap } from './three-loader/MaterialUtils.js';
+import { DemoDOMConnection } from './testing/DemoDOMConnection.js';
 
 const scene = new THREE.Scene();
 const graph = new SceneNodeGraph(scene);
+const DOMConnection = new DemoDOMConnection();
 const ui = new SceneUI().init({
     graph: graph,
-    loadingScreen: document.getElementById("loading"),
-    threeCanvas: document.getElementById("three-container"),
-    modifierRoot: document.getElementById("modifiers")
+    DOMConnection: DOMConnection
 });
 const camera = new THREE.PerspectiveCamera();
 const renderer = new THREE.WebGLRenderer({antialias: true});
@@ -58,7 +58,7 @@ setup().then(() => {
     });
     const size = Math.min(window.innerWidth, window.innerHeight);
     renderer.setSize(size, size);
-    ui.threeCanvas.appendChild(renderer.domElement);
+    DOMConnection.addTHREEtoDOM(renderer.domElement);
     
     render();
     
