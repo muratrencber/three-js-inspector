@@ -30,8 +30,9 @@ export class SceneNodeObjectSpecification
      * 
      * @param {nodeType} type 
      * @param {string} key 
+     * @param {boolean} skipMaterialMap 
      */
-    constructor(type, key)
+    constructor(type, key, skipMaterialMap)
     {
         if(!type || !SceneNodeObjectTypes[type])
             type = SceneNodeObjectTypes.empty;
@@ -55,6 +56,10 @@ export class SceneNodeObjectSpecification
          * @type {{intensity: number, color: THREE.Color}}
          */
         this.lightProperties = {intensity: 0, color: new THREE.Color().setHex(0xffffff)};
+        /**
+         * @type {boolean}
+         */
+        this.skipMaterialMap = skipMaterialMap;
     }
 
     /**
@@ -65,7 +70,8 @@ export class SceneNodeObjectSpecification
     {
         const threeObject = this.createObjectType();
         this.setTransform(threeObject);
-        this.setMaterials(threeObject);
+        if(!this.skipMaterialMap)
+            this.setMaterials(threeObject);
         this.setLightProperties(threeObject);
         if(this.type.startsWith("connection"))
         {

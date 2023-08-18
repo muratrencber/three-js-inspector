@@ -2,6 +2,7 @@ import { DOMConnection } from "../three-loader/DOMConnection.js";
 import { MaterialModifier } from "../three-loader/MaterialModifier.js";
 import { SceneModifier } from "../three-loader/SceneModifier.js";
 import { SceneModifierUI } from "../three-loader/SceneModifierUI.js";
+import { getYAMLObject } from "../three-loader/request.js";
 import { DemoMaterialModifierUI } from "./DemoModifierUIs.js";
 
 const DISABLED_CSS_CLASS = "disabled";
@@ -11,6 +12,9 @@ const DISABLED_CSS_CLASS = "disabled";
 const TYPE_MAP = {
    "material": [MaterialModifier, DemoMaterialModifierUI]
 }
+
+const MATERIAL_MAP_PATH = "./configs/mmaptest.yaml";
+const DEFAULT_MATERIAL_KEY = "default";
 
 export class DemoDOMConnection extends DOMConnection {
     constructor() {
@@ -27,6 +31,10 @@ export class DemoDOMConnection extends DOMConnection {
          * @type {Element}
          */
         this.modifierRoot = document.getElementById("modifiers"); 
+        /**
+         * @type {Object.<string, string>}
+         */
+        this.materialMap = getYAMLObject(MATERIAL_MAP_PATH);
     }
 
     addTHREEtoDOM(threeElement)
@@ -87,5 +95,15 @@ export class DemoDOMConnection extends DOMConnection {
         for(const key in clonedObject)
             resultingModifier[key] = clonedObject[key];
         return new modifierUIType(resultingModifier, this);
+    }
+
+    /**
+     * @param {string} materialKey
+     * @returns {string}
+     */
+    getMaterialImageSource(materialKey)
+    {
+        const map = this.materialMap;
+        return map[materialKey] ?? map[DEFAULT_MATERIAL_KEY];
     }
 }

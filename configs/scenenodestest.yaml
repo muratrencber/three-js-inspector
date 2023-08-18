@@ -1,9 +1,25 @@
 test:
-  source: ./data/scene/testscene.dae
+  source: ./data/scene/testscenewroot.dae
+basic-ring:
+  source: ./data/scene/basic-ring-scene.dae
+diamond-ring:
+  source: ./data/scene/diamond-ring-scene.dae
+  materialMapIgnore:
+    - diamond-ring
   preConnects:
-    - node: arrow
+    - node: diamond01
       plugKey: bottom
-      receiverKey: r1
+      receiverKey: stone-holder
+diamond01:
+  source: ./data/scene/diamond01-scene.dae
+  materialMapIgnore:
+    - diamond01
+root:
+  source: ./data/scene/rootscene.dae
+  preConnects:
+    - node: diamond-ring
+      plugKey: bottom
+      receiverKey: root
 arrow:
   source: ./data/scene/arrowscene.dae
   modifiers:

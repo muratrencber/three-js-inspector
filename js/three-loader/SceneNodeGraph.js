@@ -351,8 +351,9 @@ export class SceneNodeGraph
         const deltaQuaternion = receiverQuat.clone().multiply(plugQuat.clone().invert());
         if(plugNode)
         {
-            const resultQuaternion = deltaQuaternion.multiply(plugNode?.root.quaternion);
-            plugNode?.root.quaternion.set(resultQuaternion.x, resultQuaternion.y, resultQuaternion.z, resultQuaternion.w);
+            this.rotateNode(plugNode, deltaQuaternion, true);
+            //const resultQuaternion = deltaQuaternion.multiply(plugNode?.root.quaternion);
+            //plugNode?.root.quaternion.set(resultQuaternion.x, resultQuaternion.y, resultQuaternion.z, resultQuaternion.w);
         }
         let plugPos = new THREE.Vector3();
         let receiverPos = new THREE.Vector3();
@@ -361,7 +362,8 @@ export class SceneNodeGraph
         let deltaPosition = receiverPos.sub(plugPos);
         if(plugNode)
         {
-            plugNode.root.position.add(deltaPosition);
+            this.moveNode(plugNode, deltaPosition);
+            //plugNode.root.position.add(deltaPosition);
         }
         this.callbacks.invoke("connectionEstablished", {
             "connection": connectionInstance,
@@ -372,8 +374,9 @@ export class SceneNodeGraph
     /**
      * @param {SceneNodeConnection} receiver 
      * @param {SceneNodeConnection} plug 
+     * @param {boolean} [cleanup=true] 
      */
-    disconnect(receiver, plug)
+    disconnect(receiver, plug, cleanup = true)
     {
         if(!this.hasConnection(receiver, plug))
         {
@@ -385,6 +388,57 @@ export class SceneNodeGraph
             "connection": removedConnection,
             "graph": this
         });
-        this.cleanupNodes();
+        if(cleanup) this.cleanupNodes();
+    }
+
+    /**
+     * @param {SceneNode} node 
+     * @param {THREE.Quaternion} delta
+     * @param {boolean} leftMultiply 
+     */
+    rotateNode(node, delta, leftMultiply, alreadyRotatedNodes = [])
+    {
+        if(alreadyRotatedNodes.includes(node)) return;
+        alreadyRotatedNodes.push(this);
+        let newQuaternion = delta.clone().multiply(node.root.quaternion);
+        if(!leftMultiply)
+            newQuaternion = node.root.quaternion.clone().multiply(delta.clone());
+        node.root.quaternion.set(newQuaternion.x, newQuaternion.y, newQuaternion.z, newQuaternion.w);
+        for(const connectionKey in node.connections)
+        {
+            const conn = node.connections[connectionKey];
+            if(conn.type === "plug") continue;
+            const fullConn = this.receiverConnectionMap.get(conn);
+            if(!fullConn) continue;
+            this.rotateNode(fullConn.plug.ownerNode, delta.clone(), leftMultiply, alreadyRotatedNodes);
+
+            let receiverPos = new THREE.Vector3();
+            let plugPos = new THREE.Vector3();
+            fullConn.receiver.group.getWorldPosition(receiverPos);
+            fullConn.plug.group.getWorldPosition(plugPos);
+            let moveDelta = receiverPos.clone().sub(plugPos);
+            this.moveNode(fullConn.plug.ownerNode, moveDelta.clone());
+        }
+    }
+
+    /**
+     * @param {SceneNode} node 
+     * @param {THREE.Vector3} delta 
+     */
+    moveNode(node, delta, alreadyMovedNodes = [])
+    {
+        if(alreadyMovedNodes.includes(node)) return;
+        alreadyMovedNodes.push(this);
+
+        node.root.position.add(delta.clone());
+
+        for(const connectionKey in node.connections)
+        {
+            const conn = node.connections[connectionKey];
+            if(conn.type === "plug") continue;
+            const fullConn = this.receiverConnectionMap.get(conn);
+            if(!fullConn) continue;
+            this.moveNode(fullConn.plug.ownerNode, delta, alreadyMovedNodes);
+        }
     }
 }

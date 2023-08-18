@@ -145,7 +145,7 @@ export class SceneModifier
      * @returns {Promise<void>}
      */
     async prepareLazy(input) {
-        const dependencies = this.getLazyDependencies();
+        const dependencies = this.getLazyDependencies(input);
         this.callbacks.invoke("lazyPrepareStarted", {modifier: this, dependencies: dependencies});
         await dependencies.loadAll();
         this.callbacks.invoke("lazyPrepareFinished", {modifier: this, dependencies: dependencies});
@@ -159,9 +159,10 @@ export class SceneModifier
     /**
      * @protected
      * @abstract
+     * @param {any} input 
      * @returns {DependencyDictionary}
      */
-    getLazyDependencies() { }
+    getLazyDependencies(input) { }
     /**
      * @param {inputType} input 
      * @return {Promise<void>}

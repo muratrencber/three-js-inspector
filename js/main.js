@@ -26,10 +26,13 @@ const camera = new THREE.PerspectiveCamera();
 const renderer = new THREE.WebGLRenderer({antialias: true});
 //scene.fog = new THREE.Fog( 0xffffff, 10, 30 );
 
-camera.position.set(-0.34, 8.7, 16.37);
-camera.rotation.set(-0.53, -0.018, -0.010);
+camera.position.set(-3.04, 4.02, 2.52);
+camera.rotation.set(-0.89, -0.65, -0.64);
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0,-0.9,0);
+controls.target.set(0,1,0);
+controls.update();
+
+new THREE.Texture().offset
 
 const cubeRenderTarget = new THREE.WebGLCubeRenderTarget( 128, { generateMipmaps: true, minFilter: THREE.LinearMipmapLinearFilter } );
 const cubeCamera = new THREE.CubeCamera( 1, 100000, cubeRenderTarget );
@@ -49,10 +52,10 @@ setup().then(() => {
          * @type {[TexturePack]}
          */
         const [pack] = arr;
-        scene.background = pack.getTexture("studio");
+        scene.background = new THREE.Color(0xffffff);
     });
     ui.setLoading(true);
-    SceneNodeDatabase.instance.load("test").then(node => {
+    SceneNodeDatabase.instance.load("root").then(node => {
         ui.setLoading(false);
         graph.addNode(node);
     });

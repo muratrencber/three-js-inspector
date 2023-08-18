@@ -24,7 +24,7 @@ export class SceneNodeLoader extends ConfigLoader
     tryLoadSource(force = false)
     {
         if(this.source && !force) return;
-        this.source = new SceneNodeSource().load(this.getValue("source"));
+        this.source = new SceneNodeSource(this.getValue("materialMapIgnore", [])).load(this.getValue("source"));
     }
 
 

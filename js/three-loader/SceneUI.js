@@ -3,10 +3,7 @@ import { DOMConnection } from "./DOMConnection.js";
 import { register } from "./DependencyManager.js";
 import { SceneModifier } from "./SceneModifier.js";
 import { SceneModifierUI } from "./SceneModifierUI.js";
-import { getYAMLObject } from "./request.js";
 
-const MATERIAL_MAP_PATH = "./configs/mmaptest.yaml";
-const DEFAULT_MATERIAL_KEY = "default";
 /**
  * @typedef ModifierEventData
  * @property {SceneUI} ui
@@ -52,10 +49,6 @@ export class SceneUI {
          * @type {Array<Promise<void>>}
          */
         this.initingModifiers = [];
-        /**
-         * @type {Object.<string, string>}
-         */
-        this.materialMap = getYAMLObject(MATERIAL_MAP_PATH);
         /**
          * @type {NodeGraph}
          */
@@ -186,15 +179,5 @@ export class SceneUI {
     removeModifierUIElement(uiObject)
     {
         uiObject.removeElementConnection();
-    }
-
-    /**
-     * @param {string} materialKey
-     * @returns {string}
-     */
-    getMaterialImageSource(materialKey)
-    {
-        const map = this.materialMap;
-        return map[materialKey] ?? map[DEFAULT_MATERIAL_KEY];
     }
 }

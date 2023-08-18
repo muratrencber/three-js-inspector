@@ -42,7 +42,7 @@ export class MaterialModifier extends SceneModifier {
 
     getLazyDependencies(input)
     {
-        if(!input || input < 0 || input >= this.materialOptions.length)
+        if(input == undefined || input == null || input < 0 || input >= this.materialOptions.length)
             return new DependencyDictionary();
         return new DependencyDictionary({materials: [this.materialOptions[input]]});
     }

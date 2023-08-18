@@ -1,10 +1,21 @@
 import {ConfigLoader} from './ConfigLoader.js';
 import {SchemaKeys} from './ConfigSchema.js';
+import { parseVector2 } from './THREEParsers.js';
 import { TexturePack } from './TexturePack.js';
 import {normalizePath, getFileNameWithoutExtension} from './path.js';
 import * as THREE from 'three';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 
+const PROPERTY_PARSERS = {
+    offset: parseVector2
+}
+
+const PROPERTY_APPLIERS = {
+    offset: (texture, key, object) => {
+        texture[key].setX(object.x);
+        texture[key].setY(object.y);
+    }
+}
 
 /**
  * @extends ConfigLoader<TexturePack>
@@ -65,13 +76,13 @@ export class TexturePackLoader extends ConfigLoader
             resultPack.setTexture(key, texture)
             this.invokeCallbackFunction("loadedOneCallback", key, texture, resultPack);
         }
-        const globalProperties = this.getValue("globalProperties");
+        const globalProperties = this.getValue("globalProperties", {});
         for(const key in globalProperties) {
             for(const texKey in resultPack.dict)
             {
                 const texture = resultPack.getTexture(texKey);
                 if(!texture) continue;
-                texture[texKey] = globalProperties[key];
+                this.applyTextureProperty(texture, key, globalProperties);
             }
         }
         const properties = this.getValue("properties");
@@ -80,10 +91,27 @@ export class TexturePackLoader extends ConfigLoader
             if(!targetTexture) continue;
             const targetProperties = properties[targetTextureKey];
             for(const key in targetProperties)
-                targetTexture[key] = targetProperties[key];
+                this.applyTextureProperty(targetTexture, key, targetProperties);
         }
         this.invokeCallbackFunction("loadedAllCallback", resultPack);
         return resultPack;
+    }
+
+    applyTextureProperty(texture, key, propertyObject)
+    {
+        let val = propertyObject[key];
+        if(PROPERTY_PARSERS[key])
+        {
+            val = PROPERTY_PARSERS[key](propertyObject[key]);
+        }
+        if(PROPERTY_APPLIERS[key])
+        {
+            PROPERTY_APPLIERS[key](texture, key, val);
+        }
+        else
+        {
+            texture[key] = val;
+        }
     }
 
     /**

@@ -3,6 +3,8 @@ yokohama:
   root: ./data/texture/cubemap/yokohama
   defaultExtension: jpg
   loadedAllCallback: yokohama/loadedAll
+  globalProperties:
+    mapping: 302
 studio:
   type: hdri
   root: ./data/texture/hdri
@@ -11,6 +13,16 @@ studio:
     studio: studio
     studio_lowres: studio_lowres
   loadedAllCallback: envMap/loadedStudio
+studio_ref:
+  type: hdri
+  root: ./data/texture/hdri
+  defaultExtension: hdr
+  sources: 
+    studio: studio
+    studio_lowres: studio_lowres
+  loadedAllCallback: envMap/loadedStudio
+  globalProperties:
+    mapping: 302
 coast_sand_rocks:
   type: texture
   root: ./data/texture/coast_sand_rocks
@@ -48,6 +60,10 @@ metal_studs:
     height: height
     ao: ao
     albedo: albedo
+  globalProperties:
+    offset:
+      x: 0.7
+      y: 0.7
 common:
   root: ./data/texture
   sources:

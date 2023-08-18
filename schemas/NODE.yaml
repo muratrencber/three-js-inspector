@@ -26,3 +26,7 @@ modifiers:
   validType: array[string]
   default: []
   optional: useDefault
+materialMapIgnore:
+  validType: array[string]
+  default: []
+  optional: useDefault

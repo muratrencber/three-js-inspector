@@ -32,7 +32,11 @@ const NODE_LIGHT_ID_ATTRIBUTE = "url";
  */
 export class SceneNodeSource
 {
-    constructor()
+    /**
+     * 
+     * @param {Array<string>} materialMapIgnoreArray 
+     */
+    constructor(materialMapIgnoreArray)
     {
         /**
          * @type {Document}
@@ -42,6 +46,10 @@ export class SceneNodeSource
          * @type {Object.<string,SceneNodeObjectSpecification>}
          */
         this.sceneNodeObjects = undefined;
+        /**
+         * @type {Array<string>}
+         */
+        this.materialMapIgnoreArray = materialMapIgnoreArray;
     }
 
     /**
@@ -126,7 +134,7 @@ export class SceneNodeSource
         const nodeName = nodeElement.getAttribute(NODE_NAME_ATTRIBUTE);
         const [nodeType, nodeKey] = nodeName.split(":");
         if(!nodeType || !nodeKey || !SceneNodeObjectTypes[nodeType]) return null;
-        let result = new SceneNodeObjectSpecification(nodeType.trim(), nodeKey.trim());
+        let result = new SceneNodeObjectSpecification(nodeType.trim(), nodeKey.trim(), this.materialMapIgnoreArray.includes(nodeKey.trim()));
         result.transform = this.getTransform(nodeElement);
         result.materials = this.getReferredMaterials(nodeElement);
         const newLightProperties = this.getLightProperties(nodeElement);

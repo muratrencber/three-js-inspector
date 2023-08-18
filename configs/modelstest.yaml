@@ -4,6 +4,20 @@ mario:
   rotateX: 90
   rotateY: 180
   rotateLocal: true
+basic-ring:
+  source: ./data/model/basic-ring.fbx
+  material: ring
+diamond-ring:
+  source: ./data/model/diamond-ring.fbx
+  materialMap:
+    blinn3SG: metal_studs
+    blinn4SG: ring
+    blinn1SG: ring
+    phong3SG: ring
+diamond01:
+  source: ./data/model/diamond01.fbx
+  materialMap:
+    blinn1SG: doji_diamond
 ring:
   source: ./data/model/ring.obj
   material: error

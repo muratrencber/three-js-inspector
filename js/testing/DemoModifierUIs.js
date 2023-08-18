@@ -1,4 +1,3 @@
-import { getUIManager } from "../three-loader/DependencyManager.js";
 import { SceneModifierUI } from "../three-loader/SceneModifierUI.js";
 
 const MATERIAL_MODIFIER_UI_PARENT_CLASS = "material-modifier";
@@ -51,7 +50,7 @@ export class DemoMaterialModifierUI extends SceneModifierUI {
      */
     createMaterialSelectButton(index, materialKey)
     {
-        const imgSource = getUIManager().getMaterialImageSource(materialKey);
+        const imgSource = this.DOMConnection.getMaterialImageSource(materialKey);
         const div = document.createElement("div");
         div.setAttribute("class", MATERIAL_SELECT_BUTTON_CLASS);
         div.setAttribute(MATERIAL_INDEX_ATTRIBUTE, index);

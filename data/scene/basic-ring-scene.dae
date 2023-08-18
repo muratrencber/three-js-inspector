@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <asset>
+    <contributor>
+      <author>Blender User</author>
+      <authoring_tool>Blender 2.82.7 commit date:2020-03-12, commit time:05:06, hash:375c7dc4caf4</authoring_tool>
+    </contributor>
+    <created>2023-08-14T20:19:01</created>
+    <modified>2023-08-14T20:19:01</modified>
+    <unit name="meter" meter="1"/>
+    <up_axis>Z_UP</up_axis>
+  </asset>
+  <library_effects>
+    <effect id="basicring-effect">
+      <profile_COMMON>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <color sid="diffuse">0.5271153 0.5271151 0.5271152 1</color>
+            </diffuse>
+            <reflectivity>
+              <float sid="specular">1</float>
+            </reflectivity>
+            <index_of_refraction>
+              <float sid="ior">1.45</float>
+            </index_of_refraction>
+          </lambert>
+        </technique>
+      </profile_COMMON>
+    </effect>
+  </library_effects>
+  <library_images/>
+  <library_materials>
+    <material id="basicring-material" name="basicring">
+      <instance_effect url="#basicring-effect"/>
+    </material>
+  </library_materials>
+  <library_geometries>
+    <geometry id="Circle_001-mesh" name="Circle.001">
+      <mesh>
+        <source id="Circle_001-mesh-positions">
+          <float_array id="Circle_001-mesh-positions-array" count="159">0.3878701 0.8348853 -0.8983394 0.319531 0.4752675 -1.134415 0.25318 0.004534542 -1.229951 0.2062369 -0.4672793 -1.137756 0.1627744 -0.8678967 -0.8715612 0.1356743 -1.135854 -0.4719264 0.1264743 -1.229993 0 0 -1.23 0 0 -1.136366 -0.470698 0 -0.8697357 -0.8697362 0 -0.4706977 -1.136367 0 1.50996e-7 -1.23 0 0.4706979 -1.136366 0 0.8348853 -0.8983394 0.4364257 0.7071068 -0.7071068 0.3680865 0.3826835 -0.9238795 0.3017356 1.50996e-7 -1 0.2547925 -0.3826832 -0.9238796 0.2113299 -0.7071066 -0.707107 0.1842299 -0.9238795 -0.3826836 0.1750299 -1 0 0 -1 0 0 -0.9238795 -0.3826836 0 -0.7071066 -0.707107 0 -0.3826832 -0.9238796 0 1.50996e-7 -1 0 0.3826835 -0.9238795 0 0.7071068 -0.7071068 0.5777788 1.27376 0 0.4085513 1.27376 -0.4085513 0 1.27376 -0.5777788 0.5055456 0.9211003 -0.392527 0 0.9211003 -0.392527 0.5532503 1.002622 0 0 1.002622 0 0 1.27376 0 0.3828569 1.27376 -0.3828569 0.5414413 1.27376 0 0 1.27376 -0.5414413 0 1.145903 -0.6538048 0.4245619 1.145903 -0.5691911 0.467153 0.8220533 -0.5515835 0 0.8220533 -0.5515835 0.160781 -0.7071066 -0.707107 0.1938475 -0.3826832 -0.9238796 0.1331637 -1 0 0.1401631 -0.9238795 -0.3826836 0.3320351 0.7071068 -0.7071068 0.2295621 1.50996e-7 -1 0.2800422 0.3826835 -0.9238795 0.3846218 0.9211003 -0.392527 0.4209159 1.002622 0 0.3554126 0.8220533 -0.5515835</float_array>
+          <technique_common>
+            <accessor source="#Circle_001-mesh-positions-array" count="53" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="Circle_001-mesh-normals">
+          <float_array id="Circle_001-mesh-normals-array" count="120">0.6878162 0.5311601 -0.4947504 0.1284542 0.8371343 -0.5317008 0.54455 0.7964231 -0.2630125 0.5929827 -0.353165 -0.7236341 -7.01947e-4 -0.001068174 -0.9999993 0.58785 -0.0609762 -0.8066687 0.5829738 -0.7989568 -0.1476814 -1.22075e-4 -0.9242616 -0.3817596 0.5896728 -0.7532283 -0.2914334 -7.6298e-4 0.3773394 -0.9260748 0.5893275 0.2306343 -0.7742744 -3.66234e-4 -0.7080827 -0.7061294 0.5899363 -0.5970473 -0.5436081 -5.49347e-4 0.5836203 -0.8120266 0.6281518 0.4146071 -0.6584271 0 0.3826816 0.9238803 0 0 1 0 0.9807879 0.1950772 0 0.9238803 0.3826816 0 -0.3826816 0.9238803 0 0.7071068 0.7071068 0 -0.6901375 0.7236784 0.8128182 -0.3570138 0.4602908 0.8158379 -0.1226564 0.565123 0.8214005 0.1230544 0.5569189 0.820838 0.3462071 0.4542748 0.8223224 0.5097398 0.2528861 0.8158116 0.5637527 0.1289746 0.8356167 -0.5426015 0.08560645 0 -0.9791128 0.203318 0 -0.9283462 0.3717169 0.7764106 -0.5804463 0.2454971 0 -0.8271921 0.5619193 0 1 0 0.1193595 0.5977742 -0.7927291 0.761882 0.5656434 -0.3155688 0.7999674 -0.5063428 0.3219768 0.790314 -0.6029593 -0.1088299 -5.49338e-4 -0.3838958 -0.9233763 3.0519e-5 -0.9807879 -0.1950772</float_array>
+          <technique_common>
+            <accessor source="#Circle_001-mesh-normals-array" count="40" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="Circle_001-mesh-map-0">
+          <float_array id="Circle_001-mesh-map-0-array" count="456">0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</float_array>
+          <technique_common>
+            <accessor source="#Circle_001-mesh-map-0-array" count="228" stride="2">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="Circle_001-mesh-vertices">
+          <input semantic="POSITION" source="#Circle_001-mesh-positions"/>
+        </vertices>
+        <triangles material="basicring-material" count="76">
+          <input semantic="VERTEX" source="#Circle_001-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#Circle_001-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#Circle_001-mesh-map-0" offset="2" set="0"/>
+          <p>40 0 0 30 1 1 29 2 2 3 3 3 11 4 4 2 5 5 6 6 6 8 7 7 5 8 8 2 5 9 12 9 10 1 10 11 5 8 12 9 11 13 4 12 14 1 10 15 13 13 16 0 14 17 44 15 18 25 16 19 24 15 20 45 17 21 22 18 22 21 17 23 48 16 24 26 19 25 25 16 26 46 18 27 23 20 28 22 18 29 49 19 30 27 21 31 26 19 32 43 20 33 24 15 34 23 20 35 0 14 36 15 22 37 1 10 38 1 10 39 16 23 40 2 5 41 2 5 42 17 24 43 3 3 44 3 3 45 18 25 46 4 12 47 4 12 48 19 26 49 5 8 50 5 8 51 20 27 52 6 6 53 31 28 54 51 29 55 50 30 56 50 30 57 34 29 58 32 30 59 41 31 60 50 30 61 52 32 62 38 33 63 35 33 64 36 33 65 40 0 66 31 28 67 41 31 68 36 33 69 35 33 70 37 33 71 30 1 72 36 33 73 29 2 74 0 14 75 39 34 76 40 0 77 29 2 78 37 33 79 28 35 80 0 14 81 41 31 82 14 36 83 14 36 84 52 32 85 47 21 86 47 21 87 42 32 88 27 21 89 33 37 90 29 2 91 28 35 92 52 32 93 32 30 94 42 32 95 18 25 96 44 15 97 43 20 98 15 22 99 47 21 100 49 19 101 19 26 102 43 20 103 46 18 104 16 23 105 49 19 106 48 16 107 20 27 108 46 18 109 45 17 110 17 24 111 48 16 112 44 15 113 4 12 114 10 38 115 3 3 116 40 0 117 39 34 118 30 1 119 3 3 120 10 38 121 11 4 122 6 6 123 7 39 124 8 7 125 2 5 126 11 4 127 12 9 128 5 8 129 8 7 130 9 11 131 1 10 132 12 9 133 13 13 134 44 15 135 48 16 136 25 16 137 45 17 138 46 18 139 22 18 140 48 16 141 49 19 142 26 19 143 46 18 144 43 20 145 23 20 146 49 19 147 47 21 148 27 21 149 43 20 150 44 15 151 24 15 152 0 14 153 14 36 154 15 22 155 1 10 156 15 22 157 16 23 158 2 5 159 16 23 160 17 24 161 3 3 162 17 24 163 18 25 164 4 12 165 18 25 166 19 26 167 5 8 168 19 26 169 20 27 170 31 28 171 33 37 172 51 29 173 50 30 174 51 29 175 34 29 176 41 31 177 31 28 178 50 30 179 40 0 180 29 2 181 31 28 182 30 1 183 38 33 184 36 33 185 0 14 186 13 13 187 39 34 188 29 2 189 36 33 190 37 33 191 0 14 192 40 0 193 41 31 194 14 36 195 41 31 196 52 32 197 47 21 198 52 32 199 42 32 200 33 37 201 31 28 202 29 2 203 52 32 204 50 30 205 32 30 206 18 25 207 17 24 208 44 15 209 15 22 210 14 36 211 47 21 212 19 26 213 18 25 214 43 20 215 16 23 216 15 22 217 49 19 218 20 27 219 19 26 220 46 18 221 17 24 222 16 23 223 48 16 224 4 12 225 9 11 226 10 38 227</p>
+        </triangles>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_visual_scenes>
+    <visual_scene id="Scene" name="Scene">
+      <node id="connection_plug_bottom" name="connection/plug:bottom" type="NODE">
+        <matrix sid="transform">-1 8.74228e-8 0 0 -8.74228e-8 -1 0 -1.198168 0 0 1 0 0 0 0 1</matrix>
+      </node>
+      <node id="model_basic-ring" name="model:basic-ring" type="NODE">
+        <matrix sid="transform">1 0 0 0.02758861 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+        <instance_geometry url="#Circle_001-mesh" name="model:basic-ring">
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="basicring-material" target="#basicring-material">
+                <bind_vertex_input semantic="UVMap" input_semantic="TEXCOORD" input_set="0"/>
+              </instance_material>
+            </technique_common>
+          </bind_material>
+        </instance_geometry>
+      </node>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#Scene"/>
+  </scene>
+</COLLADA>

@@ -40,7 +40,7 @@ const MATERIAL_PROPERTIES_TYPE_MAP = {
 const TYPE_PROCESSORS = [
     {
         type: THREE.Color,
-        processor: defaultProcessor 
+        processor: colorProcessor 
     },
     {
         type: THREE.Texture,
@@ -61,6 +61,11 @@ const PROPERTY_PROCESSORS = {
         console.warn("CHECK PROPERTY");
         return value;
     }
+}
+
+function colorProcessor(value)
+{
+    return new THREE.Color(value);
 }
 
 function defaultProcessor(value)
@@ -87,7 +92,7 @@ export class MaterialLoader extends ConfigLoader
     setConfig(config)
     {
         super.setConfig(config);
-        this.applyExtends();
+        this.config = this.applyExtends(this.config, []);
     }
     
     /**
@@ -113,6 +118,9 @@ export class MaterialLoader extends ConfigLoader
             case "basic":
                 result = new THREE.MeshBasicMaterial(properties);
                 break;
+            case "phong":
+                result = new THREE.MeshPhongMaterial(properties);
+                break;
             case "standard":
             default:
                 result = new THREE.MeshStandardMaterial(properties);
@@ -123,26 +131,29 @@ export class MaterialLoader extends ConfigLoader
         return result;
     }
 
-    applyExtends()
+    applyExtends(config, alreadyExtendedMaterials=[])
     {
-        const extendsValue = this.getValue("extends", undefined);
-        if(!extendsValue) return;
+        const extendsValue = config?.extends;
+        if(!extendsValue || alreadyExtendedMaterials.includes(extendsValue)) return config;
+        alreadyExtendedMaterials.push(config.configKey);
         const matProvider = getMaterialProvider();
         if(!matProvider) throw new Error("Could not find a Material provider!");
-        const configToMerge = matProvider.getConfig(extendsValue);
-        this.config = {...configToMerge, ...this.config};
-        this.applyTexturePackSourceExtends(configToMerge);
-        this.applyPropertiesExtends(configToMerge);
+        let configToMerge = matProvider.getConfig(extendsValue);
+        configToMerge = this.applyExtends(configToMerge, alreadyExtendedMaterials);
+        config = {...configToMerge, ...this.config};
+        this.applyTexturePackSourceExtends(config, configToMerge);
+        this.applyPropertiesExtends(config, configToMerge);
+        return config;
     }
 
-    applyPropertiesExtends(otherConfig)
+    applyPropertiesExtends(config, otherConfig)
     {
         if(!otherConfig.properties) return;
-        if(!this.config.properties) this.config.properties = {};
-        this.config.properties = {...otherConfig.properties, ...this.config.properties}
+        if(!config.properties) config.properties = {};
+        config.properties = {...otherConfig.properties, ...config.properties}
     }
 
-    applyTexturePackSourceExtends(otherConfig)
+    applyTexturePackSourceExtends(config, otherConfig)
     {
         const allTPS = [];
 
@@ -157,13 +168,13 @@ export class MaterialLoader extends ConfigLoader
             for(const tps of tpsList) tryAdd(tps);
         }
 
-        tryAdd(this.config.texturePackSource);
-        tryAppend(this.config.texturePackSources);
+        tryAdd(config.texturePackSource);
+        tryAppend(config.texturePackSources);
         tryAdd(otherConfig.texturePackSource);
         tryAppend(otherConfig.texturePackSources);
 
-        this.config.texturePackSource = allTPS.length === 1 ? allTPS[0] : undefined;
-        this.config.texturePackSources = allTPS.length < 2 ? undefined : allTPS;
+        config.texturePackSource = allTPS.length === 1 ? allTPS[0] : undefined;
+        config.texturePackSources = allTPS.length < 2 ? undefined : allTPS;
     }
     
     /**

@@ -31,10 +31,10 @@ export class ModelLoader extends ConfigLoader
      */
     getMaterialDependencies()
     {
-        const material = this.getValue("material", undefined);
-        const materials = Object.values(this.getValue("materials", {}));
-        const combined = material ? [material, ...materials] : materials;
-        return Array.from(new Set(combined));
+        let resultSet = new Set();
+        Object.values(this.getValue("materialMap", {})).forEach(elem => resultSet.add(elem));
+        this.getValue("materials", []).forEach(elem => resultSet.add(elem));
+        return Array.from(resultSet);
     }
 
     async load()
@@ -70,9 +70,9 @@ export class ModelLoader extends ConfigLoader
         let materialMap = this.getValue("materialMap", {});
         for(const originalKey in materialMap)
         {
-            materialMap[originalKey] = getMaterialProvider().getLoadedConfig(materialMap[originalKey]);
+            materialMap[originalKey] = this.getMaterial(materialMap[originalKey]);
         }
-        let materials = this.getValue("materials", []).map(mat => getMaterialProvider().getLoadedConfig(mat));
+        let materials = this.getValue("materials", []).map(mat => this.getMaterial(mat));
         const defaultMaterial = this.getMaterial(this.getValue("material","error"));
         if(Object.keys(materialMap).length > 0) applyMaterialDict(group, materialMap);
         else applyMaterialArray(group, materials, defaultMaterial);
