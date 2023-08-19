@@ -68,7 +68,9 @@ export class DependencyDictionary
             const keysToLoad = Object.keys(this.dict[providerKey]);
             for(const keyToLoad of keysToLoad)
             {
-                this.dict[providerKey][keyToLoad] = await provider?.load(keyToLoad);
+                const result = await provider?.load(keyToLoad);
+                if(result === undefined || result === null) continue;
+                this.dict[providerKey][keyToLoad] = result;
             }
         }
     }

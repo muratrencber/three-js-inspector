@@ -92,7 +92,8 @@ export class SceneNodeObjectSpecification
         switch(firstPart)
         {
             case "model":
-                return ModelDatabase.instance.resetRotation(this.key);
+                const result = ModelDatabase.instance.resetRotation(this.key);
+                return result;
             case "primitive":
                 const primitiveType = typeChain[1];
                 const material = new THREE.MeshBasicMaterial({color: 0xff0000, name:"default"});

@@ -22,6 +22,16 @@ export class MaterialDatabase extends ObjectDatabase {
     }
 
     /**
+     * 
+     * @param {THREE.Material} object 
+     * @returns 
+     */
+    copyLoadedObject(object)
+    {
+        return this.loadedConfigMap[object];
+    }
+
+    /**
      * @type {MaterialDatabase}
      */
     static instance;

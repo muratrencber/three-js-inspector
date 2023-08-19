@@ -3,6 +3,7 @@ import { SchemaKeys } from './ConfigSchema.js';
 import * as THREE from 'three';
 import { getMaterialProvider, DependencyDictionary } from './DependencyManager.js';
 import { TexturePack } from './TexturePack.js';
+import { MeshRefractionMaterial } from '../external/MeshRefractionMaterial.js';
 
 const MATERIAL_PROPERTIES_TYPE_MAP = {
     clippingPlanes: Array,
@@ -34,7 +35,8 @@ const MATERIAL_PROPERTIES_TYPE_MAP = {
     specularIntensityMap: THREE.Texture,
     specularColorMap: THREE.Texture,
     iridescenceMap: THREE.Texture,
-    anisotropyMap: THREE.Texture
+    anisotropyMap: THREE.Texture,
+    resolution: THREE.Vector2
 }
 
 const TYPE_PROCESSORS = [
@@ -120,6 +122,9 @@ export class MaterialLoader extends ConfigLoader
                 break;
             case "phong":
                 result = new THREE.MeshPhongMaterial(properties);
+                break;
+            case "refraction":
+                result = new MeshRefractionMaterial(properties);
                 break;
             case "standard":
             default:

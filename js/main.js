@@ -52,7 +52,7 @@ setup().then(() => {
          * @type {[TexturePack]}
          */
         const [pack] = arr;
-        scene.background = new THREE.Color(0xffffff);
+        //scene.background = pack.getTexture("group1");
     });
     ui.setLoading(true);
     SceneNodeDatabase.instance.load("root").then(node => {

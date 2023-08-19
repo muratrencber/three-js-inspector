@@ -4,6 +4,19 @@ yokohamaReflector:
     metalness: 1
     envMap: studio/studio
   loadedCallback: reflector/loaded
+test_diamond:
+  type: refraction
+  properties:
+    envMap: studio/studio
+    bounces: 3
+    ior: 2.8
+    correctMips: true
+    aberrationStrength: 0.03
+    fresnel: 1
+    color: 0xffffff
+    resolution:
+      x: 0
+      y: 0
 basicring:
   extends: ring
   properties:
@@ -57,7 +70,7 @@ doji_diamond:
     map: diffuse
     emissiveMap: emissive
     roughnessMap: roughness
-    envMap: studio/studio
+    envMap: yokohama/group1
     ior: 1.5
     metalness: 0
     transmission: 0.5

@@ -17,7 +17,7 @@ diamond-ring:
 diamond01:
   source: ./data/model/diamond01.fbx
   materialMap:
-    blinn1SG: doji_diamond
+    blinn1SG: test_diamond
 ring:
   source: ./data/model/ring.obj
   material: error

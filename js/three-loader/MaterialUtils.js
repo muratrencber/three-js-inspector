@@ -174,6 +174,8 @@ function setFromMaterialMap(group, materialMap)
                 const newMat = materialMap.getNewOf(mat);
                 if(!newMat) continue;
                 materials[i] = newMat;
+                if(newMat.onAddedToMesh)
+                    newMat.onAddedToMesh(obj);
             }
         }
         else
@@ -181,6 +183,8 @@ function setFromMaterialMap(group, materialMap)
             const newMat = materialMap.getNewOf(obj.material);
             if(!newMat) return;
             obj.material = newMat;
+            if(newMat.onAddedToMesh)
+                newMat.onAddedToMesh(obj);
         }
     })
 }

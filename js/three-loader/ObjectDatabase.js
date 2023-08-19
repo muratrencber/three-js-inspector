@@ -86,6 +86,7 @@ export class ObjectDatabase
     addLoadedObject(key, object, replace = false)
     {
         if(this.loadedConfigMap[key] && !replace) return;
+        this.configMap[key] = {};
         this.loadedConfigMap[key] = object;
     }
 
@@ -126,6 +127,11 @@ export class ObjectDatabase
         return {...this.configMap[key]};
     }
 
+    copyLoadedObject(key)
+    {
+        return {...this.configMap[key]};
+    }
+
     /**
      * @param {string} key
      * @returns {boolean} 
@@ -163,7 +169,12 @@ export class ObjectDatabase
     {
         if(this.isConfigLoaded(key)) return Promise.resolve(this.getLoadedConfig(key));
         if(this.isConfigLoading(key)) return this.currentlyLoading[key];
-        const promise = this.loadInternal(key, checkDependencies).catch(() => {});
+        if(!this.configMap[key])
+        {
+            console.warn("Config not found!", key);
+            return Promise.resolve(undefined);
+        }
+        const promise = this.loadInternal(key, checkDependencies).catch((err) => console.error(err, key));
         this.currentlyLoading[key] = promise;
         const result = await promise;
         delete this.currentlyLoading[key];
