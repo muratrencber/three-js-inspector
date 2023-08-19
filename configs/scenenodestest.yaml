@@ -7,13 +7,21 @@ diamond-ring:
   materialMapIgnore:
     - diamond-ring
   preConnects:
-    - node: diamond01
+    - node: diamond02
       plugKey: bottom
       receiverKey: stone-holder
 diamond01:
   source: ./data/scene/diamond01-scene.dae
   materialMapIgnore:
     - diamond01
+diamond02:
+  source: ./data/scene/diamond02-scene.dae
+  materialMapIgnore:
+    - diamond02
+diamond03:
+  source: ./data/scene/diamond03-scene.dae
+  materialMapIgnore:
+    - diamond03
 root:
   source: ./data/scene/rootscene.dae
   preConnects:

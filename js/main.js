@@ -21,11 +21,11 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 
 const camera = new THREE.PerspectiveCamera();
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({antialias: true});
 const scene = new THREE.Scene();
 const size = Math.min(window.innerWidth, window.innerHeight) * 0.8;
 renderer.setSize(size, size);
-renderer.setPixelRatio(window.devicePixelRatio * 0.95);
+renderer.setPixelRatio(window.devicePixelRatio);
 //scene.fog = new THREE.Fog( 0xffffff, 10, 30 );
 
 camera.position.set(-3.04, 4.02, 2.52);
@@ -80,7 +80,7 @@ setup().then(() => {
          * @type {[TexturePack]}
          */
         const [pack] = arr;
-        //scene.background = pack.getTexture("studio");
+        scene.background = pack.getTexture("studio");
     });
     ui.setLoading(true);
     SceneNodeDatabase.instance.load("root").then(node => {
@@ -95,7 +95,7 @@ setup().then(() => {
     
 function render() {
     requestAnimationFrame(render);
-    //renderer.render(scene, camera);
-    composer.render();
+    renderer.render(scene, camera);
+    //composer.render();
     controls.update();
 }

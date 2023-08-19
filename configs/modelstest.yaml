@@ -18,6 +18,14 @@ diamond01:
   source: ./data/model/diamond01.fbx
   materialMap:
     blinn1SG: test_diamond
+diamond02:
+  source: ./data/model/diamond02.fbx
+  materialMap:
+    diamondMat: test_diamond
+diamond03:
+  source: ./data/model/diamond03.fbx
+  materialMap:
+    diamondMat: test_diamond
 ring:
   source: ./data/model/ring.obj
   material: error

@@ -1,104 +1,105 @@
 import * as THREE from 'three';
 import { shaderStructs, shaderIntersectFunction, MeshBVHUniformStruct, MeshBVH, SAH } from 'three-mesh-bvh';
 
-function isCubeTexture(envMap)
-{
-    return envMap !== undefined && envMap !== null && envMap.isCubeTexture;
+function isCubeTexture(envMap) {
+  return envMap !== undefined && envMap !== null && envMap.isCubeTexture;
 }
 
-function getDefines(parameters)
-{
-    if(!parameters) parameters = {};
-    let defines = {};
-    const aberrationStrength = parameters["aberrationStrength"];
-    const fastChroma = parameters["fastChroma"];
-    const envMap = parameters["envMap"];
-    const isCubeMap = isCubeTexture(envMap);
-    const w = (isCubeMap ? envMap.image[0]?.width : envMap?.image.width) ?? 1024;
-    const cubeSize = w / 4
-    const _lodMax = Math.floor(Math.log2(cubeSize))
-    const _cubeSize = Math.pow(2, _lodMax)
-    const width = 3 * Math.max(_cubeSize, 16 * 7)
-    const height = 4 * _cubeSize
-    if (isCubeMap) defines.ENVMAP_TYPE_CUBEM = ''
-    defines.CUBEUV_TEXEL_WIDTH = `${1.0 / width}`
-    defines.CUBEUV_TEXEL_HEIGHT = `${1.0 / height}`
-    defines.CUBEUV_MAX_MIP = `${_lodMax}.0`
-    // Add defines from chromatic aberration
-    if (aberrationStrength > 0) defines.CHROMATIC_ABERRATIONS = ''
-    if (fastChroma) defines.FAST_CHROMA = ''
-    return defines;
+function getDefines(parameters) {
+  if (!parameters) parameters = {};
+  let defines = {};
+  const aberrationStrength = parameters["aberrationStrength"];
+  const fastChroma = parameters["fastChroma"];
+  const envMap = parameters["envMap"];
+  const isCubeMap = isCubeTexture(envMap);
+  const w = (isCubeMap ? envMap.image[0]?.width : envMap?.image.width) ?? 1024;
+  const cubeSize = w / 4
+  const _lodMax = Math.floor(Math.log2(cubeSize))
+  const _cubeSize = Math.pow(2, _lodMax)
+  const width = 3 * Math.max(_cubeSize, 16 * 7)
+  const height = 4 * _cubeSize
+  if (isCubeMap) defines.ENVMAP_TYPE_CUBEM = ''
+  defines.CUBEUV_TEXEL_WIDTH = `${1.0 / width}`
+  defines.CUBEUV_TEXEL_HEIGHT = `${1.0 / height}`
+  defines.CUBEUV_MAX_MIP = `${_lodMax}.0`
+  // Add defines from chromatic aberration
+  if (aberrationStrength > 0) defines.CHROMATIC_ABERRATIONS = ''
+  if (fastChroma) defines.FAST_CHROMA = ''
+  return defines;
 }
 
-export class MeshRefractionMaterial extends THREE.ShaderMaterial
-{
+export class MeshRefractionMaterial extends THREE.ShaderMaterial {
+  /**
+   * 
+   * @param {Object.<string, any>} parameters 
+   */
+  constructor(parameters) {
+    if (!parameters) parameters = {};
     /**
-     * 
-     * @param {Object.<string, any>} parameters 
+     * @type {MeshBVHUniformStruct}
      */
-    constructor(parameters)
-    {
-        if(!parameters) parameters = {};
-        /**
-         * @type {MeshBVHUniformStruct}
-         */
-        parameters["bvh"] = new MeshBVHUniformStruct();
-        const defines = getDefines(parameters);
-        
+    parameters["bvh"] = new MeshBVHUniformStruct();
+    const defines = getDefines(parameters);
 
-        let uniforms = {};
-        for(const paramKey in parameters)
-        {
-            const uniformEntry = new THREE.Uniform(parameters[paramKey]);
-            uniforms[paramKey] = uniformEntry;
-        };
 
-        super({
-            defines: defines,
-            uniforms: uniforms,
-            fragmentShader: FRAGMENT_SHADER,
-            vertexShader: VERTEX_SHADER
-        });
-        
-        this.parameters = parameters;
+    let uniforms = {};
+    for (const paramKey in parameters) {
+      const uniformEntry = new THREE.Uniform(parameters[paramKey]);
+      uniforms[paramKey] = uniformEntry;
+    };
+
+    super({
+      defines: defines,
+      uniforms: uniforms,
+      fragmentShader: FRAGMENT_SHADER,
+      vertexShader: VERTEX_SHADER
+    });
+
+    this.parameters = parameters;
+  }
+
+  /**
+   * 
+   * @param {THREE.Mesh} mesh 
+   */
+  onAddedToMesh(mesh) {
+    this.setGeometry(mesh.geometry);
+  }
+
+  setGeometry(geometry) {
+    if (!geometry) {
+      this.geometry = undefined;
+      this.parameters.bvh = new MeshBVHUniformStruct();
     }
-
-    /**
-     * 
-     * @param {THREE.Mesh} mesh 
-     */
-    onAddedToMesh(mesh)
-    {
-        this.setGeometry(mesh.geometry);
+    else {
+      this.parameters["bvh"].updateFrom(
+        new MeshBVH(geometry.toNonIndexed(), { lazyGeneration: true, strategy: SAH })
+      );
+      this.geometry = geometry;
     }
+    this.uniforms.bvh = new THREE.Uniform(this.parameters.bvh);
+    this.needsUpdate = true;
 
-    setGeometry(geometry)
-    {
-        if (geometry)
-        {
-            this.parameters["bvh"].updateFrom(
-                new MeshBVH(geometry.toNonIndexed(), { lazyGeneration: true, strategy: SAH })
-            );
-            this.uniforms.bvh = new THREE.Uniform(this.parameters.bvh);
-            this.needsUpdate = true;
-        }
-    }
+  }
 
-    set envMap(value) {
-        this.parameters.envMap = value;
-        const defines = getDefines(this.parameters);
-        this.defines = defines;
-        this.uniforms.envMap = new THREE.Uniform(this.parameters.envMap);
-        this.needsUpdate = true;
-    }
+  set envMap(value) {
+    this.parameters.envMap = value;
+    const defines = getDefines(this.parameters);
+    this.defines = defines;
+    this.uniforms.envMap = new THREE.Uniform(this.parameters.envMap);
+    this.needsUpdate = true;
+  }
 
-    clone()
-    {
-        return this;
-    }
+  clone() {
+    let result = super.clone();
+    result.parameters = this.parameters;
+    result.parameters.bvh = this.geometry ? MeshBVH.deserialize(MeshBVH.serialize(this.parameters.bvh), this.parameters.bvh.geometry) : new MeshBVHUniformStruct();
+    result.needsUpdate = true;
+    return result;
+  }
 }
 
-const VERTEX_SHADER =`
+const VERTEX_SHADER = `
   varying vec3 vWorldPosition;  
   varying vec3 vNormal;
   varying mat4 projectionMatrixInv;
