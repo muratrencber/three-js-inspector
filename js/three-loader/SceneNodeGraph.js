@@ -118,7 +118,7 @@ export class SceneNodeGraph
         }
         delete this.nodes[node.key];
         this.scene.remove(node.root);
-        for(const connectionKey of node.connections)
+        for(const connectionKey in node.connections)
         {
             const connection = node.connections[connectionKey];
             if(connection.connectionType === "plug")
@@ -272,7 +272,7 @@ export class SceneNodeGraph
             if(connection.connectionType !== "receiver") continue;
             const graphConnection = this.receiverConnectionMap.get(connection);
             if(!graphConnection) continue;
-            this.populateConnectionMap(graphConnection.plug.ownerNode, checkedKeys);
+            this.propagateFromNode(graphConnection.plug.ownerNode, checkedKeys);
         }
     }
     
@@ -280,7 +280,7 @@ export class SceneNodeGraph
     {
         let validKeys = [];
         this.propagateFromNode(this.centralNode, validKeys);
-        let invalidKeys = Object.keys(this.nodes).filter(node => !validKeys.includes(node.key));
+        let invalidKeys = Object.keys(this.nodes).filter(key => !validKeys.includes(key));
         for(const invalidKey of invalidKeys)
         {
             this.removeNode(this.nodes[invalidKey]);

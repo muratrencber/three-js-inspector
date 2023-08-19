@@ -73,6 +73,14 @@ const ui = new SceneUI().init({
     DOMConnection: DOMConnection
 });
 
+const diamondrem = document.getElementById("remove-diamond");
+const diamondadd = document.getElementById("add-diamond");
+diamondrem.addEventListener("click", removeDiamond);
+diamondadd.addEventListener("click", addDiamond);
+
+diamondrem.style.display = "none";
+diamondadd.style.display = "none";
+
 
 setup().then(() => {
     registerCallback("envMap/loadedStudio", arr => {
@@ -86,11 +94,39 @@ setup().then(() => {
     SceneNodeDatabase.instance.load("root").then(node => {
         ui.setLoading(false);
         graph.addNode(node);
+        diamondrem.style.display = "";
     });
     DOMConnection.addTHREEtoDOM(renderer.domElement);
     
     render();
-})
+});
+
+
+function removeDiamond()
+{
+    try{
+        graph.disconnect(graph.nodes["diamond-ring"].connections["stone-holder"], graph.nodes["diamond02"].connections["bottom"]);
+        diamondrem.style.display = "none";
+        diamondadd.style.display = "";
+    }catch(e)
+    {
+        console.warn(e);
+    }
+}
+
+function addDiamond()
+{
+    try
+    {
+        graph.connect(graph.nodes["diamond-ring"].connections["stone-holder"], SceneNodeDatabase.instance.getLoadedConfig("diamond02").connections["bottom"]);
+        diamondrem.style.display = "";
+        diamondadd.style.display = "none";
+    }
+    catch(e)
+    {
+
+    }
+}
     
     
 function render() {
