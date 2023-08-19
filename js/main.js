@@ -20,12 +20,16 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 
+const stats = new Stats();
+stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
+
 const camera = new THREE.PerspectiveCamera();
 const renderer = new THREE.WebGLRenderer({antialias: true});
 const scene = new THREE.Scene();
 const size = Math.min(window.innerWidth, window.innerHeight) * 0.8;
 renderer.setSize(size, size);
 renderer.setPixelRatio(window.devicePixelRatio);
+document.getElementById("three-container").appendChild(stats.dom);
 //scene.fog = new THREE.Fog( 0xffffff, 10, 30 );
 
 camera.position.set(-3.04, 4.02, 2.52);
@@ -131,7 +135,9 @@ function addDiamond()
     
 function render() {
     requestAnimationFrame(render);
+    stats.begin();
     renderer.render(scene, camera);
     //composer.render();
     controls.update();
+    stats.end();
 }
