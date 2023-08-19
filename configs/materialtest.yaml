@@ -3,17 +3,19 @@ yokohamaReflector:
     roughness: 0
     metalness: 1
     envMap: studio/studio
+    emissiveIntensity: 0
   loadedCallback: reflector/loaded
 test_diamond:
   type: refraction
   properties:
-    envMap: studio/studio
-    bounces: 3
+    envMap: studio/studio_lowres
+    bounces: 2
     ior: 2.8
     correctMips: true
-    aberrationStrength: 0.03
+    fastChroma: true
+    aberrationStrength: 0.3
     fresnel: 1
-    color: 0xffffff
+    color: 0x0aff4d
     resolution:
       x: 0
       y: 0
@@ -26,7 +28,7 @@ basicring:
 ring:
   extends: yokohamaReflector
   properties:
-    color: 0xffc000
+    color: 0xdddddd
     roughness: 0.1
 grass:
   extends: yokohamaReflector
@@ -59,7 +61,7 @@ metal_studs:
     normalMap: normal
     aoMap: ao
     metalnessMap: metalness
-    color: 0xffc000
+    color: 0xdddddd
     roughness: 0.1
     metalness: 1
     sheen: 1

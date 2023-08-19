@@ -77,7 +77,7 @@ export class MeshRefractionMaterial extends THREE.ShaderMaterial
         if (geometry)
         {
             this.parameters["bvh"].updateFrom(
-                new MeshBVH(geometry.toNonIndexed(), { lazyGeneration: false, strategy: SAH })
+                new MeshBVH(geometry.toNonIndexed(), { lazyGeneration: true, strategy: SAH })
             );
             this.uniforms.bvh = new THREE.Uniform(this.parameters.bvh);
             this.needsUpdate = true;
