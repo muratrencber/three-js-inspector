@@ -19,6 +19,7 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
+import { RenderManager } from './three-loader/RenderManager.js';
 
 const stats = new Stats();
 stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
@@ -76,6 +77,7 @@ const ui = new SceneUI().init({
     graph: graph,
     DOMConnection: DOMConnection
 });
+const renderManager = new RenderManager(scene, camera, renderer);
 
 const diamondrem = document.getElementById("remove-diamond");
 const diamondadd = document.getElementById("add-diamond");
@@ -136,7 +138,7 @@ function addDiamond()
 function render() {
     requestAnimationFrame(render);
     stats.begin();
-    renderer.render(scene, camera);
+    renderManager.render();
     //composer.render();
     controls.update();
     stats.end();

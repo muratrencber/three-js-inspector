@@ -1,3 +1,4 @@
+import { RenderManager } from "./RenderManager.js";
 import { SceneNode } from "./SceneNode.js";
 import { TexturePack } from "./TexturePack.js";
 
@@ -161,6 +162,7 @@ class ModifierProvider extends DependencyProvider {}
  * @property {ModelProvider} models
  * @property {NodeProvider} nodes
  * @property {UIManager} uiManager
+ * @property {RenderManager} renderManager
  * @property {ModifierProvider} modifiers
  */
 
@@ -173,7 +175,8 @@ const PROVIDERS = {
     "models": null,
     "nodes": null,
     "uiManager": null,
-    "modifiers": null
+    "modifiers": null,
+    "renderManager": null,
 }
 
 /**
@@ -235,6 +238,14 @@ export function getNodeProvider()
 export function getUIManager()
 {
     return PROVIDERS.uiManager;
+}
+
+/**
+ * @returns {RenderManager | null}
+ */
+export function getRenderManager()
+{
+    return PROVIDERS.renderManager;
 }
 
 /**

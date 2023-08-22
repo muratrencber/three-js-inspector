@@ -6,7 +6,7 @@ export class CallbackList
     /**
      * @typedef {Object.<string, Array<Function>>} CallbackDict
      * @param {CallbackDict} callbackDict 
-     * @param {CallbackList} extendedList 
+     * @param {CallbackList|undefined} extendedList 
      */
     constructor(callbackDict, extendedList)
     {

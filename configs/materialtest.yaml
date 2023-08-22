@@ -9,8 +9,8 @@ test_diamond:
   type: refraction
   properties:
     envMap: studio/studio_lowres
-    bounces: 2
-    ior: 2
+    bounces: 3
+    ior: 2.8
     correctMips: true
     fastChroma: true
     aberrationStrength: 0.3

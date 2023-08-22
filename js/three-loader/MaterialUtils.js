@@ -176,15 +176,20 @@ function setFromMaterialMap(group, materialMap)
                 materials[i] = newMat;
                 if(newMat.onAddedToMesh)
                     newMat.onAddedToMesh(obj);
+                if(mat.onRemovedFromMesh)
+                    mat.onRemovedFromMesh(obj);
             }
         }
         else
         {
+            const mat = obj.material;
             const newMat = materialMap.getNewOf(obj.material);
             if(!newMat) return;
             obj.material = newMat;
             if(newMat.onAddedToMesh)
                 newMat.onAddedToMesh(obj);
+            if(mat.onRemovedFromMesh)
+                mat.onRemovedFromMesh(obj);
         }
     })
 }
